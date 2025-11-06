@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: postgres-clients
+    static_configs:
+      - targets: ['postgres-clients-exporter:9187']
+        labels:
+          database: 'clients'
+          release: 'V1.0.0'
+          namespace: 'clients-db'
+
+  - job_name: postgres-products
+    static_configs:
+      - targets: ['postgres-products-exporter:9187']
+        labels:
+          database: 'products'
+          release: 'V1.0.0'
+          namespace: 'products-db'
+
+  - job_name: mongo-warehouse
+    static_configs:
+      - targets: [ 'mongo-warehouse-exporter:9216' ]
+        labels:
+          database: 'warehouse'
+          release: 'V1.0.0'
+          namespace: 'warehouse-db'

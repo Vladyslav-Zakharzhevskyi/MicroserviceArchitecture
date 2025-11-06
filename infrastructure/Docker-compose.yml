@@ -1,0 +1,195 @@
+version: '3.9'
+
+services:
+  clients-postgres:
+    image: postgres:17.0
+    container_name: clients-postgres
+    environment:
+      POSTGRES_DB: clients
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5431:5432"
+    volumes:
+      - ../client-service/src/main/resources/database:/docker-entrypoint-initdb.d:ro
+      - ./postgres-clients-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  products-postgres:
+    image: postgres:17.0
+    container_name: products-postgres
+    environment:
+      POSTGRES_DB: products
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5430:5432"
+    volumes:
+      - ../product-service/src/main/resources/database:/docker-entrypoint-initdb.d:ro
+      - ./postgres-products-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  product-service:
+    build:
+      context: ../product-service
+      dockerfile: Dockerfile
+    container_name: product-service
+    ports:
+      - "8091:2180"
+    working_dir: /app
+    environment:
+      POSTGRES_HOST: products-postgres
+      POSTGRES_PORT: 5432
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      products-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-i", "http://localhost:2180/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  warehouse-mongo:
+    image: mongo:8.2
+    container_name: warehouse-mongo
+    environment:
+      MONGO_INITDB_DATABASE: warehouse
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27016:27017"
+    volumes:
+      - ../warehouse-service/src/main/resources/database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-warehouse-data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping').ok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  warehouse-service:
+    build:
+      context: ../warehouse-service
+      dockerfile: Dockerfile
+    container_name: warehouse-service
+    ports:
+      - "8090:2222"
+    working_dir: /app
+    environment:
+      MONGO_HOST: warehouse-mongo
+      MONGO_PORT: 27017
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      warehouse-mongo:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-i", "http://localhost:2222/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - "5400:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - "28081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: warehouse-mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mongo
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mongo
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - warehouse-mongo
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    user: root
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./static/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  grafana:
+    image: grafana/grafana:12.3.0-18765596677
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  postgres-products-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-products-exporter
+    environment:
+      DATA_SOURCE_URI: "postgres-products:5432/products?sslmode=disable"
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    depends_on:
+      products-postgres:
+        condition: service_healthy
+    ports:
+      - "9185:9187"
+
+  postgres-clients-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-clients-exporter
+    environment:
+      DATA_SOURCE_URI: "postgres-clients:5432/clients?sslmode=disable"
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    depends_on:
+      clients-postgres:
+        condition: service_healthy
+    ports:
+      - "9186:9187"
+
+  mongo-warehouse-exporter:
+    image: percona/mongodb_exporter:2.37
+    container_name: mongo-warehouse-exporter
+    environment:
+      MONGODB_URI: mongodb://warehouse-mongo:27017?tls=true
+      AUTH_USER: mongo
+      AUTH_PASS: mongo
+    depends_on:
+      warehouse-mongo:
+        condition: service_healthy
+    ports:
+      - "9216:9216"
+
+
+volumes:
+  postgres-clients-data:
+  postgres-products-data:
+  mongo-warehouse-data:
+  prometheus-data:
+  grafana-data:
