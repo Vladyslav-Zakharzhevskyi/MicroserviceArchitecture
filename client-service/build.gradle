@@ -1,0 +1,54 @@
+import java.util.Properties
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+}
+
+group = 'org.homecorporation'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.spring.io/snapshot' }
+}
+
+def envFile = file(".env")
+def env = new Properties()
+if (envFile.exists()) {
+    envFile.withInputStream { env.load(it) }
+}
+
+def springBootStarterActuatorVersion = env["SPRING_BOOT_STARTER_ACTUATOR_VERSION"]
+def springBootStarterWebFluxVersion = env["SPRING_BOOT_STARTER_WEBFLUX_VERSION"]
+def springBootStarterDataR2DBCVersion = env["SPRING_BOOT_STARTER_DATA_R2DBC_VERSION"]
+def postgresR2DBCVersion = env["POSTGRES_R2DBC_VERSION"]
+def springBootStarterTestVersion = env["SPRING_BOOT_STARTER_TEST_VERSION"]
+def springBootReactorTest = env["SPRING_BOOT_REACTOR_VERSION"]
+def junitPlatformLauncherVersion = env["JUNIT_PLATFORM_LAUNCHER_VERSION"]
+def micrometerTracingBridgeBraveVersion = env["MICROMETER_TRACING_BRIDGE_BRAVE_VERSION"]
+def micrometerRegistryPrometheusVersion = env["MICROMETER_TRACING_PROMETHEUS_VERSION"]
+
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootStarterActuatorVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-webflux:${springBootStarterWebFluxVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-r2dbc:${springBootStarterDataR2DBCVersion}"
+    implementation "io.micrometer:micrometer-tracing-bridge-brave:${micrometerTracingBridgeBraveVersion}"
+    runtimeOnly "io.micrometer:micrometer-registry-prometheus:${micrometerRegistryPrometheusVersion}"
+    runtimeOnly  "org.postgresql:r2dbc-postgresql:${postgresR2DBCVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootStarterTestVersion}"
+    testImplementation "io.projectreactor:reactor-test:${springBootReactorTest}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

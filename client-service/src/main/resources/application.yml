@@ -1,0 +1,16 @@
+server:
+  port: 2120
+
+spring:
+  application:
+    name: clients-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5431/clients
+    username: postgres
+    password: postgres
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    url: jdbc:postgresql://localhost:5431/clients
