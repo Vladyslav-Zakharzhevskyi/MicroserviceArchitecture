@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Service
 public class ProductsServiceImpl implements ProductsService {
@@ -33,25 +34,28 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public List<ProductInfoDto> getProducts(Boolean available) {
+    public List<ProductInfoDto> getProducts(Boolean onlyAvailable) {
         List<ProductInfo> products = repository.findAll();
-        return this.extendWithAvailability(products);
+        return this.extendWithAvailability(products, onlyAvailable);
     }
 
-    private List<ProductInfoDto> extendWithAvailability(List<ProductInfo> products) {
+    private List<ProductInfoDto> extendWithAvailability(List<ProductInfo> products, Boolean onlyAvailable) {
         Map<String, Integer> availability = warehouseClient.getAvailabilities(
                 products.stream().map(ProductInfo::getWarehouseRef)
                         .toList());
 
+        Predicate<ProductInfoDto> includeAvailableProducts = (product) -> availability.getOrDefault(product.getWarehouseRef(), 0) > 0;
+
         return products.stream()
                 .map(info -> mapper.doMapping(info))
+                .filter(product -> onlyAvailable ? includeAvailableProducts.test(product) : true)
                 .peek(dto -> dto.setAvailableItemCount(availability.getOrDefault(dto.getWarehouseRef(), 0)))
                 .toList();
     }
 
     @Override
-    public List<ProductInfoDto> getProducts(List<UUID> ids, Boolean available) {
+    public List<ProductInfoDto> getProducts(List<UUID> ids, Boolean onlyAvailable) {
         List<ProductInfo> products = repository.findAllById(ids);
-        return this.extendWithAvailability(products);
+        return this.extendWithAvailability(products, onlyAvailable);
     }
 }

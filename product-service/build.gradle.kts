@@ -18,21 +18,34 @@ repositories {
     mavenCentral()
 }
 
+val springCloudVersion = "4.2.2"
+val resilience4jVersion = "3.3.0"
+val flywayVersion = "11.15.0"
+val hibernateValidatorVersion = "9.0.1.Final"
+val mapstructVersion = "1.6.3"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.3.0")
+
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:${springCloudVersion}")
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:${resilience4jVersion}")
+
     implementation("io.micrometer:micrometer-tracing-bridge-brave")
-    implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("org.flywaydb:flyway-core:11.15.0")
-    implementation("org.hibernate.validator:hibernate-validator:9.0.1.Final")
-    implementation("org.mapstruct:mapstruct:1.6.3")
     runtimeOnly("io.micrometer:micrometer-registry-otlp")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+    implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
+    implementation("org.flywaydb:flyway-core:${flywayVersion}")
+
+    implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+
     runtimeOnly("org.postgresql:postgresql")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 }
 
 tasks.withType<Test> {

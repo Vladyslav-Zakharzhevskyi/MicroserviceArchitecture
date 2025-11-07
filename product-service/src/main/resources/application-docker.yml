@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          warehouse-service:
+            url: "http://warehouse-service/api/v1/warehouse/availability"

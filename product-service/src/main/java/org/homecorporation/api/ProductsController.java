@@ -4,6 +4,7 @@ package org.homecorporation.api;
 import org.homecorporation.dto.ProductInfoDto;
 import org.homecorporation.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,11 @@ public class ProductsController {
 
     @Autowired
     private ProductsService productsService;
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<ProductInfoDto>> getAllProducts(@RequestParam(value = "onlyAvailable", required = false, defaultValue = "false") Boolean onlyAvailable) {
+        return ResponseEntity.ok(productsService.getProducts(onlyAvailable));
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ProductInfoDto getProductById(@PathVariable("id") UUID id) {
