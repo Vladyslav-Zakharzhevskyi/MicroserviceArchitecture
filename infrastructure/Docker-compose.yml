@@ -135,6 +135,9 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    depends_on:
+      loki:
+        condition: service_healthy
 
   grafana:
     image: grafana/grafana:12.3.0-18765596677
@@ -146,6 +149,9 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      prometheus:
+        condition: service_healthy
 
   postgres-products-exporter:
     image: prometheuscommunity/postgres-exporter:latest
@@ -186,10 +192,35 @@ services:
     ports:
       - "9216:9216"
 
+  promtail:
+    image: grafana/promtail:3.5.7
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./static/promtail/config/promtail-config.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+
+  loki:
+    image: grafana/loki:3.5.7
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-data:/loki
+      - ./static/loki/config/loki-config.yml:/etc/loki/config.yml:ro
+    command: -config.file=/etc/loki/config.yml
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3100/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
 volumes:
   postgres-clients-data:
   postgres-products-data:
   mongo-warehouse-data:
+  loki-data:
   prometheus-data:
   grafana-data:
