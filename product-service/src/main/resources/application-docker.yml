@@ -4,4 +4,4 @@ spring:
       client:
         config:
           warehouse-service:
-            url: "http://warehouse-service/api/v1/warehouse/availability"
+            url: "http://warehouse-service:2222/api/v1/warehouse/availability"
