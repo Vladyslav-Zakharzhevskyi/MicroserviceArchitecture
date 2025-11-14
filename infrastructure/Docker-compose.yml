@@ -48,6 +48,9 @@ services:
     environment:
       POSTGRES_HOST: products-postgres
       POSTGRES_PORT: 5432
+      FEIGN_WAREHOUSE_SERVICE_URL: "http://warehouse-service:2222/api/v1/warehouse/availability"
+      ALLOY_METRICS_SEND_URL: "http://alloy:4320/v1/metrics"
+      ALLOY_TRACES_SEND_URL: "http://alloy:4319/v1/traces"
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       products-postgres:
@@ -87,6 +90,8 @@ services:
     environment:
       MONGO_HOST: warehouse-mongo
       MONGO_PORT: 27017
+      ALLOY_METRICS_SEND_URL: "http://alloy:4320/v1/metrics"
+      ALLOY_TRACES_SEND_URL: "http://alloy:4319/v1/traces"
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       warehouse-mongo:
@@ -135,6 +140,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-remote-write-receiver'
     depends_on:
       loki:
         condition: service_healthy
@@ -180,7 +186,7 @@ services:
     image: percona/mongodb_exporter:2.37
     container_name: mongo-warehouse-exporter
     environment:
-      MONGODB_URI: mongodb://warehouse-mongo:27017?tls=true
+      MONGODB_URI: mongodb://warehouse-mongo:27017/warehouse?authSource=admin
       AUTH_USER: mongo
       AUTH_PASS: mongo
     depends_on:
@@ -189,18 +195,42 @@ services:
     ports:
       - "9216:9216"
 
-  promtail:
-    image: grafana/promtail:3.5.7
-    container_name: promtail
+  alloy:
+    image: grafana/alloy:v1.11.3
+    container_name: grafana-alloy
     volumes:
-      - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./static/promtail/config/promtail-config.yml:/etc/promtail/config.yml:ro
-    command: -config.file=/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./alloy-data:/var/lib/alloy/data
+      - ./static/alloy/config/config.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      TEMPO_OTLP_ENDPOINT: http://tempo:4317
+      PROMETHEUS_OTLP_ENDPOINT: http://prometheus:9090/api/v1/write
+    ports:
+      - "4319:4317" # OTLP/gRPC
+      - "4320:4318" # OTLP/HTTP
+      - "12345:12345"
+    command: [ "run", "--server.http.listen-addr=0.0.0.0:12345", "--storage.path=/var/lib/alloy/data",
+               "/etc/alloy/config.alloy" ]
+
+  tempo:
+    image: grafana/tempo:latest
+    container_name: grafana-tempo
+    ports:
+      - "14268:14268" # jaeger ingest
+      - "3200:3200" # tempo
+      - "9095:9095" # tempo grpc
+      - "4317:4317"
+      - "4318:4318"
+      - "9411:9411" # zipkin
+    volumes:
+      - ./tempo-data:/var/tempo
+      - ./static/tempo/config/config.yml:/etc/tempo/config.yml:ro
+    command: "-config.file=/etc/tempo/config.yml"
 
   loki:
     image: grafana/loki:3.5.7
-    container_name: loki
+    container_name: grafana-loki
     ports:
       - "3100:3100"
     volumes:
@@ -218,6 +248,8 @@ volumes:
   postgres-clients-data:
   postgres-products-data:
   mongo-warehouse-data:
-  loki-data:
   prometheus-data:
+  loki-data:
+  alloy-data:
+  tempo-data:
   grafana-data:

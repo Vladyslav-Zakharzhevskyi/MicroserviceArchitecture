@@ -19,9 +19,13 @@ scrape_configs:
     static_configs:
       - targets: ["loki:3100"]
 
-  - job_name: promtail
+  - job_name: alloy
     static_configs:
-      - targets: ["promtail:9080"]
+      - targets: ["alloy:12345"]
+
+  - job_name: tempo
+    static_configs:
+      - targets: [ "tempo:3200" ]
 
   - job_name: postgres-products
     static_configs:
@@ -43,8 +47,12 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'product-service:2180' ]
+        labels:
+          service: 'product'
 
   - job_name: warehouse-service
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'warehouse-service:2222' ]
+        labels:
+          service: 'warehouse'

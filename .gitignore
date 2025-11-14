@@ -6,15 +6,9 @@ product-service.iml
 **/.mongodb/mongosh/
 
 ### Infrastructure ###
-infrastructure/grafana-data/**
-infrastructure/loki-data-data/**
-infrastructure/mongo-warehouse-data/**
-infrastructure/pgadmin-data/**
-infrastructure/postgres-clients-data/**
-infrastructure/postgres-products-data/**
-infrastructure/prometheus-data/**
-infrastructure/promtail/**
+infrastructure/**
 !infrastructure/static/**
+!infrastructure/Docker-compose.yml
 
 ### Gradle ###
 .gradle
