@@ -1,10 +1,15 @@
 package org.homecorporation.service;
 
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.Tracer;
+import io.micrometer.tracing.annotation.NewSpan;
 import org.homecorporation.dto.ProductInfoDto;
 import org.homecorporation.feign.WarehouseClient;
 import org.homecorporation.mapper.ProductMapper;
 import org.homecorporation.model.ProductInfo;
 import org.homecorporation.repository.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +20,12 @@ import java.util.function.Predicate;
 
 @Service
 public class ProductsServiceImpl implements ProductsService {
+
+    private final Logger logger = LoggerFactory.getLogger(ProductsServiceImpl.class);
+    @Autowired
+    private ObservationRegistry observationRegistry;
+    @Autowired
+    private Tracer tracer;
     @Autowired
     private ProductRepository repository;
     @Autowired
@@ -22,17 +33,22 @@ public class ProductsServiceImpl implements ProductsService {
     @Autowired
     private WarehouseClient warehouseClient;
 
+//    @NewSpan(name = "getProduct", value = "val")
     @Override
     public ProductInfoDto getProduct(UUID id) {
+//        observationRegistry.getCurrentObservation().
         ProductInfoDto productInfo = repository.findById(id)
                 .map(info -> mapper.doMapping(info))
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Product with id '%s' was not found", id)));
 
         productInfo.setAvailableItemCount(warehouseClient.getAvailability(productInfo.getWarehouseRef()));
 
+        logger.info(String.format(String.format("Received from Warehouse service availability for Product ref: '%s'", productInfo.getWarehouseRef())));
+
         return productInfo;
     }
 
+//    @NewSpan(name = "getProducts", value = "val")
     @Override
     public List<ProductInfoDto> getProducts(Boolean onlyAvailable) {
         List<ProductInfo> products = repository.findAll();
@@ -44,6 +60,8 @@ public class ProductsServiceImpl implements ProductsService {
                 products.stream().map(ProductInfo::getWarehouseRef)
                         .toList());
 
+        logger.info(String.format("Received from Warehouse service: %s items.", availability.size()));
+
         Predicate<ProductInfoDto> includeAvailableProducts = (product) -> availability.getOrDefault(product.getWarehouseRef(), 0) > 0;
 
         return products.stream()
@@ -53,6 +71,7 @@ public class ProductsServiceImpl implements ProductsService {
                 .toList();
     }
 
+//    @NewSpan(name = "getProductById", value = "val")
     @Override
     public List<ProductInfoDto> getProducts(List<UUID> ids, Boolean onlyAvailable) {
         List<ProductInfo> products = repository.findAllById(ids);

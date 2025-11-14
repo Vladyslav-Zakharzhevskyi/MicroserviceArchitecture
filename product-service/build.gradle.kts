@@ -28,13 +28,15 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
 
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:${springCloudVersion}")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:${resilience4jVersion}")
 
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
-    runtimeOnly("io.micrometer:micrometer-registry-otlp")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation ("io.opentelemetry:opentelemetry-exporter-otlp")
+    implementation("io.micrometer:micrometer-registry-otlp")
 
     implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
     implementation("org.flywaydb:flyway-core:${flywayVersion}")

@@ -5,6 +5,8 @@ server:
     include-binding-errors: always
     include-stacktrace: always
 spring:
+  application:
+    name: product-service
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5430}/products
     username: postgres
@@ -20,7 +22,7 @@ spring:
       client:
         config:
           warehouse-service:
-            url: "http://localhost:2222/api/v1/warehouse/availability"
+            url: ${FEIGN_WAREHOUSE_SERVICE_URL:http://localhost:2222/api/v1/warehouse/availability}
           default:
             connectTimeout: 5000
             readTimeout: 5000
@@ -30,15 +32,32 @@ spring:
         enabled: true
         alphanumeric-ids:
           enabled: true
+
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,info,prometheus"
-  endpoint:
-    health:
-      show-details: always
   metrics:
     export:
       prometheus:
         enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${ALLOY_TRACES_SEND_URL:http://localhost:4319/v1/traces}
+      transport: grpc
+    metrics:
+      export:
+        enabled: true
+        url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
+
+logging:
+  pattern:
+    level: "%5p [traceId=%X{traceId} spanId=%X{spanId}]"
+  level:
+    io.opentelemetry: DEBUG
+    io.opentelemetry.exporter: DEBUG

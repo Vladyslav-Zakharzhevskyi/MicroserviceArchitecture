@@ -1,6 +1,8 @@
 package org.homecorporation.feign.fallback;
 
+import io.micrometer.tracing.Tracer;
 import org.homecorporation.feign.WarehouseClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
