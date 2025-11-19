@@ -1,9 +1,5 @@
 server:
   port: 2180
-  error:
-    include-message: always
-    include-binding-errors: always
-    include-stacktrace: always
 spring:
   application:
     name: product-service
@@ -12,6 +8,10 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+    proxy:
+      enable-logging: true
+      query:
+        enable: true
   flyway:
     enabled: true
     validate-on-migrate: true
@@ -19,7 +19,6 @@ spring:
     locations: classpath:db/migration
   cloud:
     openfeign:
-
       client:
         config:
           warehouse-service:

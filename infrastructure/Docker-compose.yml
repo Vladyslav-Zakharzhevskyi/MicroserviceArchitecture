@@ -49,8 +49,8 @@ services:
       POSTGRES_HOST: products-postgres
       POSTGRES_PORT: 5432
       FEIGN_WAREHOUSE_SERVICE_URL: "http://warehouse-service:2222/api/v1/warehouse/availability"
-      ALLOY_METRICS_SEND_URL: "http://alloy:4320/v1/metrics"
-      ALLOY_TRACES_SEND_URL: "http://alloy:4319/v1/traces"
+      ALLOY_METRICS_SEND_URL: "http://alloy:4318/v1/metrics"
+      ALLOY_TRACES_SEND_URL: "http://alloy:4317/v1/traces"
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       products-postgres:
@@ -90,8 +90,8 @@ services:
     environment:
       MONGO_HOST: warehouse-mongo
       MONGO_PORT: 27017
-      ALLOY_METRICS_SEND_URL: "http://alloy:4320/v1/metrics"
-      ALLOY_TRACES_SEND_URL: "http://alloy:4319/v1/traces"
+      ALLOY_METRICS_SEND_URL: "http://alloy:4318/v1/metrics"
+      ALLOY_TRACES_SEND_URL: "http://alloy:4317/v1/traces"
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       warehouse-mongo:
@@ -140,13 +140,15 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=365d'
+      - '--storage.tsdb.retention.size=5GB'
       - '--web.enable-remote-write-receiver'
     depends_on:
       loki:
         condition: service_healthy
 
   grafana:
-    image: grafana/grafana:12.3.0-18765596677
+    image: grafana/grafana-enterprise
     container_name: grafana
     ports:
       - "3000:3000"
@@ -224,7 +226,7 @@ services:
       - "4318:4318"
       - "9411:9411" # zipkin
     volumes:
-      - ./tempo-data:/var/tempo
+      - ./tempo-data/var/tempo:/var/tempo
       - ./static/tempo/config/config.yml:/etc/tempo/config.yml:ro
     command: "-config.file=/etc/tempo/config.yml"
 

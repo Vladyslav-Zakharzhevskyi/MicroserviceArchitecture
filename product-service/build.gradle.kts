@@ -39,6 +39,7 @@ dependencies {
     implementation ("io.opentelemetry:opentelemetry-exporter-otlp")
     implementation("io.micrometer:micrometer-registry-otlp")
     implementation("io.github.openfeign:feign-micrometer:${feignMicrometerVersion}")
+    implementation("io.micrometer:micrometer-observation")
 
     implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
     implementation("org.flywaydb:flyway-core:${flywayVersion}")

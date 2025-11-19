@@ -10,11 +10,12 @@ query_frontend:
     metadata_slo:
       duration_slo: 5s
       throughput_bytes_slo: 1.073741824e+09
+    query_backend_after: 10m
+    query_ingesters_until: 10m
   trace_by_id:
     duration_slo: 5s
   metrics:
     max_duration: 200h
-    query_backend_after: 5m
     duration_slo: 5s
     throughput_bytes_slo: 1.073741824e+09
 
@@ -28,11 +29,21 @@ distributor:
           endpoint: "tempo:4318"
 
 ingester:
-  max_block_duration: 5m # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
+  max_block_duration: 1h # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
 
 compactor:
   compaction:
-    block_retention: 720h
+    block_retention: 672h
+    compacted_block_retention: 2h
+    compaction_cycle: 30s
+    compaction_window: 2h
+    max_block_bytes: 107374182400
+    max_compaction_objects: 6000000
+    max_time_per_tenant: 5m
+    retention_concurrency: 10
+    v2_in_buffer_bytes: 5242880
+    v2_out_buffer_bytes: 20971520
+    v2_prefetch_traces_count: 1000
 
 metrics_generator:
   registry:
@@ -59,4 +70,4 @@ overrides:
   defaults:
     metrics_generator:
       processors: [service-graphs, span-metrics, local-blocks] # enables metrics generator
-      generate_native_histograms: both
+      generate_native_histograms: classic
