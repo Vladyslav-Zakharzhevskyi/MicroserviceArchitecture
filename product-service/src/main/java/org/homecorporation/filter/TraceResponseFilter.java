@@ -26,8 +26,8 @@ public class TraceResponseFilter implements Filter {
         String traceId = MDC.get("traceId");
         String spanId = MDC.get("spanId");
         if (traceId != null) {
-            servletResponse.addHeader("trace-id", traceId);
-            servletResponse.addHeader("span-id", spanId);
+            servletResponse.addHeader("X-Trace-Id", traceId);
+            servletResponse.addHeader("X-Span-Id", spanId);
         }
 
         filterChain.doFilter(request, response);
