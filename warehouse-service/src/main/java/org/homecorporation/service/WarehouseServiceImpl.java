@@ -20,7 +20,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private AvailabilityRepository repository;
 
     @Override
-    public Integer getAvailableItemsForProduct(String ref) {
+    public Integer getProductAvailability(String ref) {
         Integer availability = repository.findByRef(ref)
                 .map(Availability::getAvailabilityCount)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Corresponding item is not present in db. Id '%s' not found.", ref)));
@@ -31,7 +31,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public Map<String, Integer> getAvailableItemsForProduct(List<String> refs) {
+    public Map<String, Integer> getProductsAvailability(List<String> refs) {
         Map<String, Integer> availabilityMap = repository.findByRefIn(refs).stream()
                 .collect(Collectors.toMap(Availability::getRef, Availability::getAvailabilityCount));
 

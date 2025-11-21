@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,12 +20,12 @@ public class WarehouseController {
 
     @RequestMapping(path = "/{ref}", method = RequestMethod.GET)
     public Integer getAvailability(@PathVariable("ref") String ref) {
-        return warehouseService.getAvailableItemsForProduct(ref);
+        return warehouseService.getProductAvailability(ref);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public Map<String, Integer> getAvailability(@RequestBody List<String> refs) {
-        return warehouseService.getAvailableItemsForProduct(refs);
+        return warehouseService.getProductsAvailability(refs);
     }
 
 }
