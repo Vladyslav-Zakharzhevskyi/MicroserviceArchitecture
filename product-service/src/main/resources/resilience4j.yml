@@ -1,0 +1,8 @@
+resilience4j:
+  retry:
+    instances:
+      warehouse-service:
+        maxAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
