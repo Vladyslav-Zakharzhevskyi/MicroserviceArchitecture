@@ -10,8 +10,8 @@ query_frontend:
     metadata_slo:
       duration_slo: 5s
       throughput_bytes_slo: 1.073741824e+09
-    query_backend_after: 30m
-    query_ingesters_until: 30m
+    query_backend_after: 12h
+    query_ingesters_until: 12h
   trace_by_id:
     duration_slo: 5s
   metrics:
