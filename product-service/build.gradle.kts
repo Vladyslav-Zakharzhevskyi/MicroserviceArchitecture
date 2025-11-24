@@ -24,6 +24,7 @@ val flywayVersion = "11.15.0"
 val hibernateValidatorVersion = "9.0.1.Final"
 val mapstructVersion = "1.6.3"
 val feignMicrometerVersion = "13.6"
+val micrometerJdbcObservationVersion = "1.0.6"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -40,6 +41,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-otlp")
     implementation("io.github.openfeign:feign-micrometer:${feignMicrometerVersion}")
     implementation("io.micrometer:micrometer-observation")
+    implementation("net.ttddyy.observation:datasource-micrometer-spring-boot:${micrometerJdbcObservationVersion}")
 
     implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
     implementation("org.flywaydb:flyway-core:${flywayVersion}")

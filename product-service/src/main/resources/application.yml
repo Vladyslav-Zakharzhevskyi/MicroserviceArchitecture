@@ -63,4 +63,6 @@ logging:
     level: "%5p [traceId=%X{traceId} spanId=%X{spanId}]"
   level:
     io.opentelemetry: DEBUG
+    io.micrometer.observation.jdbc: DEBUG
     io.opentelemetry.exporter: DEBUG
+    io.micrometer.tracing: DEBUG
