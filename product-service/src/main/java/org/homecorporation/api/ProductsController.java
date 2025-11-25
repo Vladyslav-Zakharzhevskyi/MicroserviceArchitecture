@@ -24,18 +24,21 @@ public class ProductsController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<ProductInfoDto>> getAllProducts(@RequestParam(value = "onlyAvailable", required = false, defaultValue = "false") Boolean onlyAvailable) {
-        return ResponseEntity.ok(productsService.getProducts(onlyAvailable));
+        return ResponseEntity.ok().
+                body(productsService.getProducts(onlyAvailable));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ProductInfoDto getProductById(@PathVariable("id") UUID id) {
-        return productsService.getProduct(id);
+    public ResponseEntity<ProductInfoDto> getProductById(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok()
+                .body(productsService.getProduct(id));
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public List<ProductInfoDto> getProductsByIds(@RequestParam(name = "onlyAvailable") Boolean onlyAvailable,
+    public ResponseEntity<List<ProductInfoDto>> getProductsByIds(@RequestParam(name = "onlyAvailable") Boolean onlyAvailable,
                                                  @RequestBody List<UUID> ids) {
-        return productsService.getProducts(ids, onlyAvailable);
+        return ResponseEntity.ok()
+                .body(productsService.getProducts(ids, onlyAvailable));
     }
 
 }
