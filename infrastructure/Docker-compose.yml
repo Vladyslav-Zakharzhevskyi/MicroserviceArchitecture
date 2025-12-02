@@ -1,23 +1,23 @@
 version: '3.9'
 
 services:
-  clients-postgres:
-    image: postgres:17.0
-    container_name: clients-postgres
-    environment:
-      POSTGRES_DB: clients
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5431:5432"
-    volumes:
-      - ../client-service/src/main/resources/database:/docker-entrypoint-initdb.d:ro
-      - ./postgres-clients-data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
+#  clients-postgres:
+#    image: postgres:17.0
+#    container_name: clients-postgres
+#    environment:
+#      POSTGRES_DB: clients
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#    ports:
+#      - "5431:5432"
+#    volumes:
+#      - ../client-service/src/main/resources/database:/docker-entrypoint-initdb.d:ro
+#      - ./postgres-clients-data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 20
 
   products-postgres:
     image: postgres:17.0
@@ -158,11 +158,11 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
-  postgres-products-exporter:
+  products-postgres-exporter:
     image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres-products-exporter
+    container_name: products-postgres-exporter
     environment:
-      DATA_SOURCE_URI: "postgres-products:5432/products?sslmode=disable"
+      DATA_SOURCE_URI: "products-postgres:5432/products?sslmode=disable"
       DATA_SOURCE_USER: postgres
       DATA_SOURCE_PASS: postgres
     depends_on:
@@ -171,22 +171,22 @@ services:
     ports:
       - "9185:9187"
 
-  postgres-clients-exporter:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres-clients-exporter
-    environment:
-      DATA_SOURCE_URI: "postgres-clients:5432/clients?sslmode=disable"
-      DATA_SOURCE_USER: postgres
-      DATA_SOURCE_PASS: postgres
-    depends_on:
-      clients-postgres:
-        condition: service_healthy
-    ports:
-      - "9186:9187"
+#  clients-postgres-exporter:
+#    image: prometheuscommunity/postgres-exporter:latest
+#    container_name: clients-postgres-exporter
+#    environment:
+#      DATA_SOURCE_URI: "clients-postgres:5432/clients?sslmode=disable"
+#      DATA_SOURCE_USER: postgres
+#      DATA_SOURCE_PASS: postgres
+#    depends_on:
+#      clients-postgres:
+#        condition: service_healthy
+#    ports:
+#      - "9186:9187"
 
-  mongo-warehouse-exporter:
+  warehouse-mongo-exporter:
     image: percona/mongodb_exporter:2.37
-    container_name: mongo-warehouse-exporter
+    container_name: warehouse-mongo-exporter
     environment:
       MONGODB_URI: mongodb://warehouse-mongo:27017/warehouse?authSource=admin
       AUTH_USER: mongo

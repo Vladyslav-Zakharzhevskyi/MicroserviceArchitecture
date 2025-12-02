@@ -7,52 +7,54 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
-  - job_name: postgres-clients
+  - job_name: alloy
     static_configs:
-      - targets: ['postgres-clients-exporter:9187']
-        labels:
-          database: 'clients'
-          release: 'V1.0.0'
-          namespace: 'clients-db'
+      - targets: ["alloy:12345"]
 
   - job_name: loki
     static_configs:
       - targets: ["loki:3100"]
 
-  - job_name: alloy
-    static_configs:
-      - targets: ["alloy:12345"]
-
   - job_name: tempo
     static_configs:
-      - targets: [ "tempo:3200" ]
+      - targets: ["tempo:3200"]
 
-  - job_name: postgres-products
+  - job_name: product-service
+    metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['postgres-products-exporter:9187']
+      - targets: ['product-service:2180']
+        labels:
+          service: 'product'
+
+  - job_name: products-postgres
+    static_configs:
+      - targets: ['products-postgres-exporter:9187']
         labels:
           database: 'products'
           release: 'V1.0.0'
           namespace: 'products-db'
 
-  - job_name: mongo-warehouse
+  - job_name: warehouse-service
+    metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'mongo-warehouse-exporter:9216' ]
+      - targets: ['warehouse-service:2222']
+        labels:
+          service: 'warehouse'
+
+  - job_name: warehouse-mongo
+    static_configs:
+      - targets: ['warehouse-mongo-exporter:9216']
         labels:
           database: 'warehouse'
           release: 'V1.0.0'
           namespace: 'warehouse-db'
 
-  - job_name: product-service
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: [ 'product-service:2180' ]
-        labels:
-          service: 'product'
 
-  - job_name: warehouse-service
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: [ 'warehouse-service:2222' ]
-        labels:
-          service: 'warehouse'
+
+  #  - job_name: postgres-clients
+  #    static_configs:
+  #      - targets: ['clients-postgres-exporter:9187']
+  #        labels:
+  #          database: 'clients'
+  #          release: 'V1.0.0'
+  #          namespace: 'clients-db'
