@@ -1,0 +1,12 @@
+collector_name: last_updated_product
+
+metrics:
+  - metric_name: last_updated_product
+    type: gauge
+    help: 'Time when prices for a market were last updated.'
+    static_labels:
+      portfolio: income
+    values: [updated_at]
+    query: |
+      SELECT EXTRACT(EPOCH FROM max(updated_at)) AS updated_at
+      FROM products

@@ -1,0 +1,11 @@
+global:
+  scrape_timeout_offset: 500ms
+  max_connections: 3
+  max_idle_connections: 3
+
+target:
+  data_source_name: 'postgres://postgres:postgres@products-postgres:5432/products?sslmode=disable'
+  collectors: [last_updated_product]
+
+collector_files:
+  - "collectors/*.collector.yml"
