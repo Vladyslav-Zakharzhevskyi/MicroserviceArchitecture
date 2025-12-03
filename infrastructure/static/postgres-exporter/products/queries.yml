@@ -1,0 +1,7 @@
+products_count_total:
+  query: |
+    SELECT count(*) AS products_count FROM products;
+  metrics:
+    - products_count:
+        usage: "GAUGE"
+        description: "Count of product items"
