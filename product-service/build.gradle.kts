@@ -31,6 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:${openFeignVersion}")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:${resilience4jVersion}")

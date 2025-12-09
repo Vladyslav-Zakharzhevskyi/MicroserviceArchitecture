@@ -21,6 +21,12 @@ spring:
     validate-on-migrate: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    mode: HTML
+    encoding: UTF-8
   cloud:
     openfeign:
       client:
