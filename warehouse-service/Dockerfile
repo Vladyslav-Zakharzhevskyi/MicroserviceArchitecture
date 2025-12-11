@@ -16,5 +16,5 @@ WORKDIR /app
 
 COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
 
-EXPOSE 2222
+EXPOSE 8070
 CMD ["java", "-jar", "app.jar"]

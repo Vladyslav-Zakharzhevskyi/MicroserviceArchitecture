@@ -22,7 +22,7 @@ scrape_configs:
   - job_name: product-service
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['product-service:2180']
+      - targets: ['product-service:8080']
         labels:
           service: 'product'
 
@@ -42,7 +42,7 @@ scrape_configs:
   - job_name: warehouse-service
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['warehouse-service:2222']
+      - targets: ['warehouse-service:8070']
         labels:
           service: 'warehouse'
 

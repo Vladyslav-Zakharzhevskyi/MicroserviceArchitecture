@@ -43,12 +43,12 @@ services:
       dockerfile: Dockerfile
     container_name: product-service
     ports:
-      - "8091:2180"
+      - "5080:8080"
     working_dir: /app
     environment:
       POSTGRES_HOST: products-postgres
       POSTGRES_PORT: 5432
-      FEIGN_WAREHOUSE_SERVICE_URL: "http://warehouse-service:2222/api/v1/warehouse/availability"
+      FEIGN_WAREHOUSE_SERVICE_URL: "http://warehouse-service:8070/api/v1/warehouse/availability"
       ALLOY_METRICS_SEND_URL: "http://alloy:4318/v1/metrics"
       ALLOY_TRACES_SEND_URL: "http://alloy:4317/v1/traces"
       SPRING_PROFILES_ACTIVE: docker
@@ -56,7 +56,7 @@ services:
       products-postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-i", "http://localhost:2180/actuator/health" ]
+      test: [ "CMD", "curl", "-i", "http://localhost:8080/actuator/health" ]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -85,7 +85,7 @@ services:
       dockerfile: Dockerfile
     container_name: warehouse-service
     ports:
-      - "8090:2222"
+      - "5070:8070"
     working_dir: /app
     environment:
       MONGO_HOST: warehouse-mongo

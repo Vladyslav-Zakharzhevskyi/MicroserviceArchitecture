@@ -1,5 +1,5 @@
 server:
-  port: 2222
+  port: 8070
 spring:
   application:
     name: warehouse-service
