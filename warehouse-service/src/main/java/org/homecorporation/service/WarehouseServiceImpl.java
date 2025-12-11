@@ -1,5 +1,6 @@
 package org.homecorporation.service;
 
+import org.homecorporation.exceptions.ProductAbsentInWarehouse;
 import org.homecorporation.model.Availability;
 import org.homecorporation.repo.AvailabilityRepository;
 import org.slf4j.Logger;
@@ -14,32 +15,35 @@ import java.util.stream.Collectors;
 @Service
 public class WarehouseServiceImpl implements WarehouseService {
 
-    private Logger logger = LoggerFactory.getLogger(WarehouseServiceImpl.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(WarehouseServiceImpl.class);
+    public static final String AVAILABILITY_LOG_MSG = "Key:'%s'-Availability is:'%d' ";
 
     @Autowired
     private AvailabilityRepository repository;
 
     @Override
     public Integer getProductAvailability(String ref) {
-        Integer availability = repository.findByRef(ref)
-                .map(Availability::getAvailabilityCount)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Corresponding item is not present in db. Id '%s' not found.", ref)));
+        Availability availability = repository
+                .findByRef(ref)
+                .orElseThrow(() -> new ProductAbsentInWarehouse(ref));
 
-        logger.info(String.format("Retrieved Availability for Ref: '%s' with value: '%s'", ref, availability));
+        LOGGER.info(String.format(AVAILABILITY_LOG_MSG, ref, availability.getAvailabilityCount()));
 
-        return availability;
+        return availability.getAvailabilityCount();
     }
 
     @Override
     public Map<String, Integer> getProductsAvailability(List<String> refs) {
-        Map<String, Integer> availabilityMap = repository.findByRefIn(refs).stream()
+        Map<String, Integer> availability = repository.findByRefIn(refs)
+                .stream()
                 .collect(Collectors.toMap(Availability::getRef, Availability::getAvailabilityCount));
 
-        String info = availabilityMap.keySet()
-                .stream().reduce("Availability: ", (seq, key) -> seq + String.format("Key:'%s'-Items:'%d' ", key, availabilityMap.get(key)));
+        LOGGER.info(availability
+                .entrySet().stream()
+                .reduce("Availability Info: ",
+                        (val, entry) -> val.concat(String.format(AVAILABILITY_LOG_MSG, entry.getKey(), entry.getValue())),
+                        String::concat));
 
-        logger.info(String.format("Retrieved Availabilities '%s' ", info));
-
-        return availabilityMap;
+        return availability;
     }
 }
