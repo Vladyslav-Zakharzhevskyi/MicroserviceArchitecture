@@ -1,0 +1,16 @@
+server:
+  port: 8060
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5429}/orders
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    proxy:
+      enable-logging: true
+      query:
+        enable: true
+  jpa:
+    open-in-view: false
