@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "Products")
-public class ProductInfo {
+public class Product {
 
     @Id
     @Column(name = "id")
@@ -52,7 +52,7 @@ public class ProductInfo {
     @Column(name = "description", columnDefinition = "text")
     private String description;
 
-    public ProductInfo() {}
+    public Product() {}
 
     public UUID getId() {
         return id;
@@ -121,7 +121,7 @@ public class ProductInfo {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ProductInfo that = (ProductInfo) o;
+        Product that = (Product) o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(sku, that.sku) && Objects.equals(warehouseRef, that.warehouseRef) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(price, that.price) && Objects.equals(description, that.description);
     }
 

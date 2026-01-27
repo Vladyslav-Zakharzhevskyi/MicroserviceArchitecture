@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
-public class ProductInfoDto {
+public class ProductDTO {
     private UUID id;
     private String name;
     private String sku;
@@ -15,9 +15,9 @@ public class ProductInfoDto {
     private Integer availableItemCount;
     private String description;
 
-    public ProductInfoDto(UUID id, String name, String sku, String warehouseRef,
-                          Date createdAt, Date updatedAt, BigDecimal price,
-                          Integer availableItemCount, String description) {
+    public ProductDTO(UUID id, String name, String sku, String warehouseRef,
+                      Date createdAt, Date updatedAt, BigDecimal price,
+                      Integer availableItemCount, String description) {
         this.id = id;
         this.name = name;
         this.sku = sku;

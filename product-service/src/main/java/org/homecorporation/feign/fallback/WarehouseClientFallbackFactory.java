@@ -1,8 +1,9 @@
 package org.homecorporation.feign.fallback;
 
-import io.micrometer.tracing.Tracer;
+import io.opentelemetry.api.trace.Span;
 import org.homecorporation.feign.WarehouseClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.homecorporation.feign.exception.WarehouseServiceInteractionException;
+import org.homecorporation.feign.request.IsEnoughForOrderAvailabilityRequest;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
@@ -15,17 +16,16 @@ public class WarehouseClientFallbackFactory implements FallbackFactory<Warehouse
     @Override
     public WarehouseClient create(Throwable cause) {
         return new WarehouseClient() {
-
-            @Override
             public Integer getAvailability(String ref) {
-                throw new RuntimeException(String.format("Problem with Call to WarehouseService. Message: %s", cause.getMessage()));
+                throw new WarehouseServiceInteractionException(cause);
             }
-
-            @Override
             public Map<String, Integer> getAvailabilities(List<String> refs) {
-                throw new RuntimeException(String.format("Problem with Call to WarehouseService. Message: %s", cause.getMessage()));
+                throw new WarehouseServiceInteractionException(cause);
             }
-
+            public Boolean isEnoughForOrder(IsEnoughForOrderAvailabilityRequest model) {
+                System.out.println("TraceId: " + Span.current().getSpanContext().getTraceId());
+                throw new WarehouseServiceInteractionException(cause);
+            }
         };
     }
 }

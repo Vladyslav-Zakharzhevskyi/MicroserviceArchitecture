@@ -34,14 +34,14 @@ spring:
           warehouse-service:
             url: ${FEIGN_WAREHOUSE_SERVICE_URL:http://localhost:8070/api/v1/warehouse/availability}
           default:
-            connectTimeout: 1000
-            readTimeout: 1000
+            connectTimeout: 6000
+            readTimeout: 6000
             loggerLevel: full
             micrometer.enabled: true
       circuitbreaker:
         enabled: true
         alphanumeric-ids:
-          enabled: true
+          enabled: false
 management:
   metrics:
     export:

@@ -5,27 +5,52 @@
 </head>
 <body>
 <h2> Available Products </h2>
-<table border="1" >
+<table class="products" width="100%" border="1" >
     <thead>
     <tr>
         <th>Name</th>
+        <th>Ref</th>
         <th>SKU</th>
         <th>Created</th>
         <th>Updated</th>
         <th>Price</th>
-        <th>Availability</th>
+        <th>Available Count</th>
         <th>Description</th>
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="product: ${products}">
         <td th:text="${product.name}">Name</td>
+        <td th:text="${product.warehouseRef}">Ref</td>
         <td th:text="${product.sku}">SKU</td>
         <td th:text="${#dates.format(product.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
         <td th:text="${#dates.format(product.updatedAt, 'dd.MM.yyyy HH:mm')}"></td>
         <td th:text="${product.price}">price</td>
         <td th:text="${product.availableItemCount}">availableItemCount</td>
         <td th:text="${product.description}">description</td>
+        <td th:switch="${product.availableItemCount > 0}">
+            <div th:case="true">
+                <form th:action="@{/api/products/order}" method="post" style="display:inline">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+                    <input type="hidden" name="count" value="1"/>
+                    <button type="submit">Заказать</button>
+                </form>
+                <form th:action="@{/api/products/order}" method="post" style="display:inline">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+                    <input type="hidden" name="count" value="3"/>
+                    <button type="submit">Заказать 3 Itema</button>
+                </form>
+                <form th:action="@{/api/products/order}" method="post" style="display:inline">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+                    <input type="hidden" name="count" value="5"/>
+                    <button type="submit">Заказать 5 Itemov</button>
+                </form>
+            </div>
+            <div th:case="false">
+                <span style="color:red">absent in warehouse</span>
+            </div>
+        </td>
     </tr>
     </tbody>
 </table>

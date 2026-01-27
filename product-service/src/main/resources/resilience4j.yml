@@ -6,3 +6,11 @@ resilience4j:
         waitDuration: 500ms
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 6s
+        cancel-running-future: true
+    instances:
+      warehouse-service:
+        base-config: default

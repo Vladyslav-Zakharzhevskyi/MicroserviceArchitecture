@@ -1,7 +1,7 @@
 package org.homecorporation.api;
 
 
-import org.homecorporation.dto.ProductInfoDto;
+import org.homecorporation.dto.ProductDTO;
 import org.homecorporation.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,11 +19,10 @@ public class ProductsController {
     @Autowired
     private ProductsService productsService;
 
-
     @RequestMapping(method = RequestMethod.GET)
     public String getAllProducts(@RequestParam(value = "onlyAvailable", required = false, defaultValue = "false") Boolean onlyAvailable,
                                                                Model model) {
-        List<ProductInfoDto> products = productsService.getProducts(onlyAvailable);
+        List<ProductDTO> products = productsService.getProducts(onlyAvailable);
         model.addAttribute("products", products);
         return "view/products";
     }

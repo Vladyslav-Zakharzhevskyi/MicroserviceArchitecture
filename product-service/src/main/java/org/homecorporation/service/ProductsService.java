@@ -1,12 +1,12 @@
 package org.homecorporation.service;
 
-import org.homecorporation.dto.ProductInfoDto;
+import org.homecorporation.dto.ProductDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductsService {
-    ProductInfoDto getProduct(UUID id);
-    List<ProductInfoDto> getProducts(Boolean onlyAvailable);
-    List<ProductInfoDto> getProducts(List<UUID> ids, Boolean onlyAvailable);
+    ProductDTO getProduct(UUID id);
+    List<ProductDTO> getProducts(Boolean onlyAvailable);
+    List<ProductDTO> getProducts(List<UUID> ids, Boolean onlyAvailable);
 }
