@@ -102,6 +102,47 @@ services:
       timeout: 5s
       retries: 30
 
+  orders-postgres:
+    image: postgres:17.0
+    container_name: orders-postgres
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5429:5432"
+    volumes:
+      - ../order-service/src/main/resources/database:/docker-entrypoint-initdb.d:ro
+      - ./postgres-orders-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  orders-service:
+    build:
+      context: ../order-service
+      dockerfile: Dockerfile
+    container_name: orders-service
+    ports:
+      - "5060:8060"
+    working_dir: /app
+    environment:
+      POSTGRES_HOST: orders-postgres
+      POSTGRES_PORT: 5432
+      ALLOY_METRICS_SEND_URL: "http://alloy:4318/v1/metrics"
+      ALLOY_TRACES_SEND_URL: "http://alloy:4317/v1/traces"
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      orders-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-i", "http://localhost:8060/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -268,6 +309,7 @@ services:
 volumes:
   postgres-clients-data:
   postgres-products-data:
+  postgres-orders-data:
   mongo-warehouse-data:
   prometheus-data:
   loki-data:
