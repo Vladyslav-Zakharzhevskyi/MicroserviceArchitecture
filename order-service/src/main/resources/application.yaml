@@ -1,6 +1,8 @@
 server:
   port: 8060
 spring:
+  config:
+    import: "classpath:ecosystem-urls.yml"
   application:
     name: order-service
   datasource:
