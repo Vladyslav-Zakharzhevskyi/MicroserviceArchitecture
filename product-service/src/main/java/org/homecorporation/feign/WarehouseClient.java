@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(
-        value = "warehouse-service",
-        contextId = "warehouse-service",
+@FeignClient(name = "warehouse-service", url = "${eco.services.urls.warehouse}" + WarehouseClient.AVAILABILITY_SFX,
         fallbackFactory = WarehouseClientFallbackFactory.class)
 @Retry(name = "warehouse-service")
 public interface WarehouseClient {
@@ -24,4 +22,7 @@ public interface WarehouseClient {
     Map<String, Integer> getAvailabilities(@RequestBody List<String> refs);
     @PostMapping("/isEnoughForOrder")
     Boolean isEnoughForOrder(@RequestBody IsEnoughForOrderAvailabilityRequest model);
+
+    //todo are you sure that warehouse service is responsible only for availability ?
+    String AVAILABILITY_SFX = "/availability";
 }

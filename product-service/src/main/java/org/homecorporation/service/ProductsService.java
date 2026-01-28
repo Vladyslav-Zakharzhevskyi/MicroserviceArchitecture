@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductsService {
-    ProductDTO getProduct(UUID id);
-    List<ProductDTO> getProducts(Boolean onlyAvailable);
+    ProductDTO getProduct(UUID id, Boolean showAvailability);
+    List<ProductDTO> getProducts(Boolean onlyAvailable, Boolean showAvailability);
     List<ProductDTO> getProducts(List<UUID> ids, Boolean onlyAvailable);
 }

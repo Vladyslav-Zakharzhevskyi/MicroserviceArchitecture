@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Predicate;
 
 @Service
 public class ProductsServiceImpl implements ProductsService {
@@ -27,55 +25,40 @@ public class ProductsServiceImpl implements ProductsService {
     private ProductMapper mapper;
     @Autowired
     private WarehouseClient warehouseClient;
-    @Autowired
-    private ExecutorService fixedThreadPool;
 
     //@NewSpan(name = "getProduct", value = "val")
     @Override
-    public ProductDTO getProduct(UUID id) {
+    public ProductDTO getProduct(UUID id, Boolean showAvailability) {
         ProductDTO productInfo = productRepository.findById(id)
-                .map(mapper::map)
+                .map(product -> mapper.map(product, warehouseClient, showAvailability))
                 .orElseThrow(() -> new ProductNotFoundException(id));
-
-        //get availability
-        String warehouseRef = productInfo.getWarehouseRef();
-        Integer availability = warehouseClient.getAvailability(warehouseRef);
-        productInfo.setAvailableItemCount(availability);
-
-        logger.info(String.format(String.format("Received from Warehouse service availability for Product ref: '%s'", warehouseRef)));
 
         return productInfo;
     }
 
     //@NewSpan(name = "getProducts", value = "val")
     @Override
-    public List<ProductDTO> getProducts(Boolean onlyAvailable) {
+    public List<ProductDTO> getProducts(Boolean onlyAvailable, Boolean showAvailability) {
         List<Product> products = productRepository.findAll();
-        return this.extendWithAvailability(products, onlyAvailable);
+        return getProductsWithAvailability(products, showAvailability);
     }
 
-    private List<ProductDTO> extendWithAvailability(List<Product> products, Boolean onlyAvailable) {
+    private List<ProductDTO> getProductsWithAvailability(List<Product> products, Boolean showAvailability) {
         List<String> warehouseRefs = products.stream()
                 .map(Product::getWarehouseRef)
                 .toList();
+
         Map<String, Integer> availabilities = warehouseClient.getAvailabilities(warehouseRefs);
 
-        logger.info(String.format("Received from Warehouse service: %s items.", availabilities.size()));
-
-        //todo refactor onlyAvailable logic
-        Predicate<ProductDTO> includeAvailableProducts = (product) -> availabilities.getOrDefault(product.getWarehouseRef(), 0) > 0;
-        return products.stream()
-                .map(mapper::map)
-                .filter(pI -> !onlyAvailable || includeAvailableProducts.test(pI))
-                .peek(pI -> pI.setAvailableItemCount(availabilities.getOrDefault(pI.getWarehouseRef(), 0)))
-                .toList();
+        return mapper.map(products, showAvailability, availabilities);
     }
+
 
     //@NewSpan(name = "getProductById", value = "val")
     @Override
-    public List<ProductDTO> getProducts(List<UUID> ids, Boolean onlyAvailable) {
+    public List<ProductDTO> getProducts(List<UUID> ids, Boolean showAvailability) {
         List<Product> products = productRepository.findAllById(ids);
-        return this.extendWithAvailability(products, onlyAvailable);
+        return getProductsWithAvailability(products, showAvailability);
     }
 
 }

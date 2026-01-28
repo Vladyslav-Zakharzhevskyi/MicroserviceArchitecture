@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   config:
-    import: "classpath:resilience4j.yml"
+    import: "classpath:resilience4j.yml, classpath:ecosystem-urls.yml"
   application:
     name: product-service
   datasource:
@@ -31,8 +31,6 @@ spring:
     openfeign:
       client:
         config:
-          warehouse-service:
-            url: ${FEIGN_WAREHOUSE_SERVICE_URL:http://localhost:8070/api/v1/warehouse/availability}
           default:
             connectTimeout: 6000
             readTimeout: 6000
@@ -65,8 +63,6 @@ management:
         url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
 
 logging:
-  pattern:
-    level: "%5p [traceId=%X{traceId} spanId=%X{spanId}]"
   level:
     io.opentelemetry: DEBUG
     io.micrometer.observation.jdbc: DEBUG
