@@ -5,15 +5,17 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document
-public class Availability {
+@Document(value = "availability")
+public class InventoryDocument {
     @Id
     private String id;
     @Field
     @Indexed
     private String ref;
     @Field(value = "availableItemsCount")
-    private Integer availabilityCount;
+    private Integer availableCount;
+    @Field(value = "reservedCount")
+    private Integer reservedCount;
 
     public String getRef() {
         return ref;
@@ -23,11 +25,11 @@ public class Availability {
         this.ref = ref;
     }
 
-    public Integer getAvailabilityCount() {
-        return availabilityCount;
+    public Integer getAvailableCount() {
+        return availableCount;
     }
 
-    public void setAvailabilityCount(Integer availabilityCount) {
-        this.availabilityCount = availabilityCount;
+    public void setAvailableCount(Integer availableCount) {
+        this.availableCount = availableCount;
     }
 }

@@ -27,10 +27,12 @@ management:
       export:
         enabled: true
         url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
-
 logging:
   pattern:
-    level: "%5p [traceId=%X{traceId} spanId=%X{spanId}]"
+    level: "%5p [traceId=%X{traceId}, spanId=%X{spanId}]"
   level:
-    io.opentelemetry: DEBUG
-    io.opentelemetry.exporter: DEBUG
+    root: INFO
+    org.springframework.web: INFO
+    io.micrometer.tracing: INFO
+    io.opentelemetry: WARN
+    io.opentelemetry.exporter: WARN
