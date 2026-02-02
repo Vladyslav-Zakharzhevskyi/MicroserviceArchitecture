@@ -3,13 +3,14 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     status VARCHAR(10) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+    expired_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ordered_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID NOT NULL,
+    warehouse_ref VARCHAR NOT NULL,
     quantity INT NOT NULL,
     product_price NUMERIC(12, 2) NOT NULL CHECK (product_price >= 0),
     total_price NUMERIC(12, 2) NOT NULL CHECK (total_price >= 0),

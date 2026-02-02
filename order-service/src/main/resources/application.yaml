@@ -14,5 +14,40 @@ spring:
       enable-logging: true
       query:
         enable: true
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    locations: classpath:flyway
   jpa:
     open-in-view: false
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  otlp:
+    tracing:
+      endpoint: ${ALLOY_TRACES_SEND_URL:http://localhost:4319/v1/traces}
+      transport: grpc
+    metrics:
+      export:
+        enabled: true
+        url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
+logging:
+  pattern:
+    level: "%5p [traceId=%X{traceId}, spanId=%X{spanId}]"
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    io.micrometer.tracing: INFO
+    io.opentelemetry: WARN
+    io.opentelemetry.exporter: WARN

@@ -1,15 +1,23 @@
 package org.homecorporation.service;
 
-import org.homecorporation.dto.OrderCreatedDto;
+import org.homecorporation.dto.OrderCreatedResult;
+import org.homecorporation.dto.PaymentLink;
 import org.homecorporation.dto.ProductDTO;
+import org.homecorporation.exception.OutOfStockException;
 import org.homecorporation.feign.ProductServiceClient;
-import org.homecorporation.feign.WarehouseServiceClient;
+import org.homecorporation.feign.WarehouseReservationClient;
+import org.homecorporation.model.Order;
+import org.homecorporation.model.OrderItem;
+import org.homecorporation.repository.OrderItemRepository;
+import org.homecorporation.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 @Service
 public class OrderServiceImpl implements OrdersService {
@@ -17,40 +25,43 @@ public class OrderServiceImpl implements OrdersService {
     @Autowired
     private ProductServiceClient productServiceClient;
     @Autowired
-    private WarehouseServiceClient warehouseServiceClient;
+    private WarehouseReservationClient warehouseReservationClient;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
-    @Override
-    public OrderCreatedDto order(UUID productId, Integer count) {
+    @Transactional
+    public OrderCreatedResult order(UUID productId, Integer count) {
         ProductDTO product = productServiceClient.getProductById(productId, true);
-        Integer availabilityForItem = warehouseServiceClient.getAvailability(product.warehouseRef());
 
-        
-//        Product product = productRepository.findById(productId)
-//                .orElseThrow(() -> new ProductNotFoundException(productId));
-////        Boolean enoughForOrder2 = warehouseClient.isEnoughForOrder(new IsEnoughForOrderAvailabilityRequest(product.getWarehouseRef(), count));
-////
-////
-////        System.out.println("1.");
-//
-//
-//        Future<Boolean> future = fixedThreadPool.submit(() -> {
-//            System.out.println("Поток: " + Thread.currentThread().getName());
-//            return warehouseClient.isEnoughForOrder(new IsEnoughForOrderAvailabilityRequest(product.getWarehouseRef(), count));
-//
-//        });
-//
-//
-//        Boolean hasAvailableCount = null;
-//        try {
-//            hasAvailableCount = future.get();
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        } catch (ExecutionException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//
-//        return new OrderCreatedDto(productId, count, hasAvailableCount);
-        return null;
+        Integer isReserved = warehouseReservationClient.reserve(product.warehouseRef(), count);
+        if (isReserved < 1) {
+            throw new OutOfStockException(product, count);
+        }
+
+        Order order = new Order();
+        order.setCreatedAt(Instant.now().atZone(ZoneId.systemDefault()));
+        order.setExpiredAt(Instant.now().plusSeconds(15 * 60).atZone(ZoneId.systemDefault()));
+        order.setStatus(Order.Status.CREATED);
+        orderRepository.save(order);
+
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order);
+        orderItem.setProductId(productId);
+        orderItem.setQuantity(count);
+        orderItem.setWarehouseRef(product.warehouseRef());
+        orderItem.setProductPrice(product.price());
+        orderItem.setTotalPrice(product.price().multiply(new BigDecimal(count)));
+        orderItemRepository.save(orderItem);
+
+
+        return new OrderCreatedResult(
+                order.getId(),
+                order.getStatus(),
+                order.getCreatedAt(),
+                new PaymentLink()
+        );
     }
 }

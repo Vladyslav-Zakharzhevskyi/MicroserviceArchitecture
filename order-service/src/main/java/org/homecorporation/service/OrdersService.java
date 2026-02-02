@@ -1,9 +1,9 @@
 package org.homecorporation.service;
 
-import org.homecorporation.dto.OrderCreatedDto;
+import org.homecorporation.dto.OrderCreatedResult;
 
 import java.util.UUID;
 
 public interface OrdersService {
-    OrderCreatedDto order(UUID productId, Integer count);
+    OrderCreatedResult order(UUID productId, Integer count);
 }

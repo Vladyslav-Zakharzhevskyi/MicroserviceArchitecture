@@ -20,13 +20,30 @@ repositories {
 ext {
     set('springCloudVersion', "2025.0.1")
     set('openFeignVersion', "4.2.2")
+    set('feignMicrometerVersion', "13.6")
+    set('micrometerJdbcObservationVersion', "1.0.6")
+    set('flywayVersion', "11.15.0")
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${openFeignVersion}"
+
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    implementation("io.micrometer:micrometer-registry-otlp")
+    implementation("io.github.openfeign:feign-micrometer:${feignMicrometerVersion}")
+    implementation("io.micrometer:micrometer-observation")
+    implementation("net.ttddyy.observation:datasource-micrometer-spring-boot:${micrometerJdbcObservationVersion}")
+
+    implementation("org.flywaydb:flyway-core:${flywayVersion}")
+    implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
+
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -1,6 +1,6 @@
 package org.homecorporation.api;
 
-import org.homecorporation.dto.OrderCreatedDto;
+import org.homecorporation.dto.OrderCreatedResult;
 import org.homecorporation.service.OrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ public class OrdersController {
     private OrdersService ordersService;
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<OrderCreatedDto> order(@RequestParam UUID productId, @RequestParam Integer count) {
+    public ResponseEntity<OrderCreatedResult> order(@RequestParam UUID productId, @RequestParam Integer count) {
 
-        OrderCreatedDto order = ordersService.order(productId, count);
+        OrderCreatedResult order = ordersService.order(productId, count);
 
         return ResponseEntity.ok(order);
     }
