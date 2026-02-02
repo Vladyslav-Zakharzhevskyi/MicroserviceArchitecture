@@ -44,8 +44,8 @@ dependencies {
     implementation("io.micrometer:micrometer-observation")
     implementation("net.ttddyy.observation:datasource-micrometer-spring-boot:${micrometerJdbcObservationVersion}")
 
-    implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
     implementation("org.flywaydb:flyway-core:${flywayVersion}")
+    implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
 
     implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
     implementation("org.mapstruct:mapstruct:${mapstructVersion}")

@@ -24,5 +24,5 @@ public interface WarehouseClient {
     Boolean isEnoughForOrder(@RequestBody IsEnoughForOrderAvailabilityRequest model);
 
     //todo are you sure that warehouse service is responsible only for availability ?
-    String AVAILABILITY_SFX = "/availability";
+    String AVAILABILITY_SFX = "/inventory";
 }
