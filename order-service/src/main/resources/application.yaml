@@ -27,13 +27,16 @@ management:
     sampling:
       probability: 1.0
   metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
     export:
       prometheus:
         enabled: true
   endpoints:
     web:
       exposure:
-        include: "health,prometheus"
+        include: "prometheus, health, metrics"
   otlp:
     tracing:
       endpoint: ${ALLOY_TRACES_SEND_URL:http://localhost:4319/v1/traces}

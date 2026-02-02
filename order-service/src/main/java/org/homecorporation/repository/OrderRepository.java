@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,5 +19,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
         WHERE o.expiredAt < :now
         AND o.status NOT IN ('COMPLETED', 'EXPIRED', 'PAYMENT_COMPLETED')
         """)
-    List<Order> findExpired(@Param("now") Instant now);
+    List<Order> findExpired(@Param("now") ZonedDateTime zdt);
 }

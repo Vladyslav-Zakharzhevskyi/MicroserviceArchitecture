@@ -1,5 +1,6 @@
 package org.homecorporation.service;
 
+import io.micrometer.core.annotation.Timed;
 import org.homecorporation.dto.OrderCreatedResult;
 import org.homecorporation.dto.PaymentLink;
 import org.homecorporation.dto.ProductDTO;
@@ -31,6 +32,13 @@ public class OrderServiceImpl implements OrdersService {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
+    @Timed(
+            value = "order.create",
+            description = "Time spent creating order",
+            percentiles = {0.5, 0.95, 0.99},
+            histogram = true,
+            extraTags = {"domain", "order", "operation", "create"}
+    )
     @Transactional
     public OrderCreatedResult order(UUID productId, Integer count) {
         ProductDTO product = productServiceClient.getProductById(productId, true);
