@@ -24,7 +24,7 @@ public class ReservationController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/cancelReservation/{productRef}/{count}")
+    @RequestMapping(method = RequestMethod.POST, path = "/cancel/{productRef}/{count}")
     public Boolean cancelReservation(@PathVariable String productRef,
                                      @PathVariable(value = "count") Integer reservationCount) {
         if (reservationCount <= 0) {

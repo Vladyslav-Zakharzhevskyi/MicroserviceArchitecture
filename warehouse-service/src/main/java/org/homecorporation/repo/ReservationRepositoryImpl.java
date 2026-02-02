@@ -1,6 +1,7 @@
 package org.homecorporation.repo;
 
 import com.mongodb.client.result.UpdateResult;
+import org.homecorporation.exceptions.NegativeReservedCountException;
 import org.homecorporation.model.InventoryDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -39,16 +40,21 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public void release(String productRef, Integer reservationCount) {
         Query query = Query.query(
                 Criteria.where("ref").is(productRef)
+                        .and("reservedCount").gte(reservationCount)
         );
 
         Update update = new Update()
                 .inc("reservedCount", -reservationCount)
                 .inc("availableCount", reservationCount);
 
-        mongoTemplate.updateFirst(
+        UpdateResult result = mongoTemplate.updateFirst(
                 query,
                 update,
                 InventoryDocument.class
         );
+
+        if (result.getModifiedCount() < 1) {
+            throw new NegativeReservedCountException(productRef, reservationCount);
+        }
     }
 }
