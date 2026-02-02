@@ -21,14 +21,14 @@
     </thead>
     <tbody>
     <tr th:each="product: ${products}">
-        <td th:text="${product.name}">Name</td>
-        <td th:text="${product.warehouseRef}">Ref</td>
-        <td th:text="${product.sku}">SKU</td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.warehouseRef}"></td>
+        <td th:text="${product.sku}"></td>
         <td th:text="${#dates.format(product.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
         <td th:text="${#dates.format(product.updatedAt, 'dd.MM.yyyy HH:mm')}"></td>
-        <td th:text="${product.price}">price</td>
-        <td th:text="${product.availableItemCount}">availableItemCount</td>
-        <td th:text="${product.description}">description</td>
+        <td th:text="${product.price}"></td>
+        <td th:text="${product.availableItemCount}"></td>
+        <td th:text="${product.description}"></td>
         <td th:switch="${product.availableItemCount > 0}">
             <div th:case="true">
                 <form th:action="${@environment.getProperty('eco.services.urls.orders')}" method="post" style="display:inline">
