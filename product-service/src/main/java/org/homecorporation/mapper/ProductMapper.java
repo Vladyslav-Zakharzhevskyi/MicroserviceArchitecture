@@ -35,7 +35,7 @@ public interface ProductMapper {
         if (!showAvailability)
             return null;
 
-        return availabilities.getOrDefault(warehouseRef, null);
+        return availabilities.getOrDefault(warehouseRef, 0);
     }
 
 }
