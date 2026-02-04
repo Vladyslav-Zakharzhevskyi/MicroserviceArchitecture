@@ -26,8 +26,7 @@ public class Order {
     }
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue
     @Column(nullable = false, updatable = false)
     private UUID id;
 
