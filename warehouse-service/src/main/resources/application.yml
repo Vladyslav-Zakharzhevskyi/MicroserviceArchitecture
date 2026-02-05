@@ -33,6 +33,8 @@ logging:
   level:
     root: INFO
     org.springframework.web: INFO
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.springframework.data.mongodb.repository.query: DEBUG
     io.micrometer.tracing: INFO
     io.opentelemetry: WARN
     io.opentelemetry.exporter: WARN
