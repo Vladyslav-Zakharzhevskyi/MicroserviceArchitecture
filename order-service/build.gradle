@@ -23,6 +23,7 @@ ext {
     set('feignMicrometerVersion', "13.6")
     set('micrometerJdbcObservationVersion', "1.0.6")
     set('flywayVersion', "11.15.0")
+    set('testContainersVersion', "2.0.3")
 }
 
 dependencies {
@@ -45,6 +46,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation 'org.testcontainers:junit-jupiter:1.21.4'
+    testImplementation 'org.testcontainers:postgresql:1.21.4'
 }
 
 dependencyManagement {
