@@ -1,28 +1,37 @@
 package org.homecorporation.service;
 
 import io.micrometer.core.annotation.Timed;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.homecorporation.dto.OrderCreatedResult;
 import org.homecorporation.dto.PaymentLink;
 import org.homecorporation.dto.ProductDTO;
+import org.homecorporation.exception.CantReleaseReservationExceptionForOrder;
 import org.homecorporation.exception.OutOfStockException;
 import org.homecorporation.feign.ProductServiceClient;
 import org.homecorporation.feign.WarehouseReservationClient;
 import org.homecorporation.model.Order;
 import org.homecorporation.model.OrderItem;
+import org.homecorporation.model.ReleaseReservationOutbox;
 import org.homecorporation.repository.OrderItemRepository;
 import org.homecorporation.repository.OrderRepository;
+import org.homecorporation.repository.ReleaseReservationOutBoxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 @Service
 public class OrderServiceImpl implements OrdersService {
 
+    private static final Logger log = LogManager.getLogger(OrderServiceImpl.class);
     @Autowired
     private ProductServiceClient productServiceClient;
     @Autowired
@@ -31,6 +40,10 @@ public class OrderServiceImpl implements OrdersService {
     private OrderRepository orderRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
+    @Autowired
+    private ExecutorService forkJoinPool;
+    @Autowired
+    private ReleaseReservationOutBoxRepository releaseReservationOutBoxRepository;
 
     @Timed(
             value = "order.create",
@@ -71,5 +84,41 @@ public class OrderServiceImpl implements OrdersService {
                 order.getCreatedAt(),
                 new PaymentLink()
         );
+    }
+
+    @Transactional
+    @Override
+    public void makeOrderExpiredAndSetUpReleaseReservation(Order order) {
+
+        List<ReleaseReservationOutbox> outBoxReleaseModels = order.getItems()
+                .stream()
+                .map(orderItem -> {
+                    ReleaseReservationOutbox outbox = new ReleaseReservationOutbox();
+                    outbox.setOrder(order);
+                    outbox.setStatus(ReleaseReservationOutbox.Status.TO_EXECUTE);
+                    outbox.setWarehouseRef(orderItem.getWarehouseRef());
+                    outbox.setQuantity(orderItem.getQuantity());
+                    return outbox;
+                })
+                .toList();
+        releaseReservationOutBoxRepository.saveAll(outBoxReleaseModels);
+
+        //mark order as expired
+        order.setStatus(Order.Status.EXPIRED);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void release(String warehouseRef, Integer count) {
+        try {
+            ResponseEntity<Boolean> response = warehouseReservationClient.cancelReservation(warehouseRef, count);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info(String.format("Successfully released '%s' items for warehouseRef '%s'", warehouseRef, count));
+            } else {
+                throw new CantReleaseReservationExceptionForOrder(warehouseRef, count, response.toString());
+            }
+        } catch (RuntimeException e) {
+            throw new CantReleaseReservationExceptionForOrder(warehouseRef, count, e);
+        }
     }
 }
