@@ -28,9 +28,9 @@ public class ReleaseReservationOutbox {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
+    private Order order;
 
     @Column(nullable = false, updatable = false)
     private String warehouseRef;
@@ -38,9 +38,9 @@ public class ReleaseReservationOutbox {
     @Column(nullable = false, updatable = false)
     private Integer quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
-    private Order order;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -60,12 +60,12 @@ public class ReleaseReservationOutbox {
         this.id = id;
     }
 
-    public Status getStatus() {
-        return status;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public String getWarehouseRef() {
@@ -84,12 +84,12 @@ public class ReleaseReservationOutbox {
         this.quantity = quantity;
     }
 
-    public Order getOrder() {
-        return order;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public ZonedDateTime getCreatedAt() {

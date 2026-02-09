@@ -65,7 +65,7 @@ public class ExpiredOrdersSchedulerServiceImpl implements ExpiredOrdersScheduler
                 expired.setStatus(ReleaseReservationOutbox.Status.COMPLETED);
                 expired.setFinishedAt(TimeUtil.getDateTimeAt(ZONE_ID_KYIV));
                 //reduce amount of used memory in db
-                expired.setLastErrorMessage("");
+//                expired.setLastErrorMessage("");
             } catch (Exception ex) {
                 expired.setLastErrorMessage(ex.getMessage());
                 expired.setStatus(ReleaseReservationOutbox.Status.FAILED);

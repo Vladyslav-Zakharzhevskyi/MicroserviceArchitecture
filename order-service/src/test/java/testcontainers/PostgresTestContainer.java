@@ -12,7 +12,7 @@ public abstract class PostgresTestContainer {
         postgres = new PostgreSQLContainer<>("postgres:17.0")
                 .withDatabaseName("orders-test")
                 .withUsername("postgres")
-                .withPassword("test");
+                .withPassword("postgres-tests");
 
         postgres.start();
     }

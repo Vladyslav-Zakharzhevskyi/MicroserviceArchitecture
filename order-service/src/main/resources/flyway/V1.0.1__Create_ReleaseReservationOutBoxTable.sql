@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS release_reservation_outbox (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    status VARCHAR NOT NULL,
+    order_id UUID NOT NULL,
     warehouse_ref VARCHAR NOT NULL,
     quantity INT NOT NULL,
-    order_id UUID NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    finished_at TIMESTAMP WITH TIME ZONE,
+    status VARCHAR NOT NULL,
+    created_at timestamptz(0) NOT NULL DEFAULT now(),
+    finished_at timestamptz(0),
     last_error_message TEXT,
 
     CONSTRAINT release_reservation_outbox_has_orders_fk FOREIGN KEY (order_id)
