@@ -24,6 +24,7 @@ ext {
     set('micrometerJdbcObservationVersion', "1.0.6")
     set('flywayVersion', "11.15.0")
     set('testContainersVersion', "2.0.3")
+    set('apacheHttpClient', "5.6")
 }
 
 dependencies {
@@ -42,6 +43,7 @@ dependencies {
     implementation("net.ttddyy.observation:datasource-micrometer-spring-boot:${micrometerJdbcObservationVersion}")
     implementation("org.flywaydb:flyway-core:${flywayVersion}")
     implementation("org.flywaydb:flyway-database-postgresql:${flywayVersion}")
+    implementation("org.apache.httpcomponents.client5:httpclient5:${apacheHttpClient}")
 
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

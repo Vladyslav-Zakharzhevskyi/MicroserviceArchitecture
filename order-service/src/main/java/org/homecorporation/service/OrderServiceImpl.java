@@ -7,7 +7,7 @@ import org.homecorporation.dto.OrderCreatedResult;
 import org.homecorporation.dto.PaymentLink;
 import org.homecorporation.dto.ProductDTO;
 import org.homecorporation.exception.CantReleaseReservationExceptionForOrder;
-import org.homecorporation.exception.OutOfStockException;
+import org.homecorporation.exception.ProductOutOfStockException;
 import org.homecorporation.feign.ProductServiceClient;
 import org.homecorporation.feign.WarehouseReservationClient;
 import org.homecorporation.model.Order;
@@ -58,7 +58,7 @@ public class OrderServiceImpl implements OrdersService {
 
         Integer isReserved = warehouseReservationClient.reserve(product.warehouseRef(), count);
         if (isReserved < 1) {
-            throw new OutOfStockException(product, count);
+            throw new ProductOutOfStockException(product, count);
         }
 
         Order order = new Order();
