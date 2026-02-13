@@ -27,9 +27,11 @@ dependencies {
     implementation 'io.micrometer:micrometer-tracing-bridge-otel'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
-    implementation("io.opentelemetry.instrumentation:opentelemetry-mongo-3.1:2.22.0-alpha")
     implementation 'io.micrometer:micrometer-registry-otlp'
     implementation "io.micrometer:micrometer-observation"
+
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.6")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-mongo-3.1:2.22.0-alpha")
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
