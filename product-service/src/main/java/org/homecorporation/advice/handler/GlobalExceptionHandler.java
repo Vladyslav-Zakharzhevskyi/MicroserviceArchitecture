@@ -2,8 +2,6 @@ package org.homecorporation.advice.handler;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;

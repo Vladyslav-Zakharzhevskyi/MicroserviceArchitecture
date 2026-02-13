@@ -1,5 +1,5 @@
 eco:
   services:
     urls:
-      warehouse: ${ECO_SERVICE_WAREHOUSE_URL:http://localhost:8070/api/v1/warehouse}
+      warehouse: ${ECO_SERVICE_WAREHOUSE_URL:https://localhost:8070/api/v1/warehouse}
       orders: ${ECO_SERVICE_ORDERS_URL:http://localhost:8060/api/v1/orders}
