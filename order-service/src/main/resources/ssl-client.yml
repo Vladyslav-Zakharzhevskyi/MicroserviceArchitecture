@@ -1,0 +1,14 @@
+spring:
+  ssl:
+    bundle:
+      jks:
+        orders-client:
+          keystore:
+            location: file:${KEY_STORE_LOCATION:''}
+            password: ${KEY_STORE_PASSWORD:''}
+            type: PKCS12
+            alias: keystore-orders
+          truststore:
+            location: file:${TRUST_STORE_LOCATION:''}
+            password: ${TRUST_STORE_PASSWORD:''}
+            type: PKCS12

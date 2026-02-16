@@ -1,18 +1,10 @@
 server:
   port: 8070
-  ssl:
-    enabled: true
-    key-store: file:${KEY_STORE_LOCATION:''}
-    key-store-password: ${KEY_STORE_PASSWORD:''}
-    key-store-type: PKCS12
-    key-alias: keystore-warehouse
-    trust-store: file:${TRUST_STORE_LOCATION:''}
-    trust-store-password: ${TRUST_STORE_PASSWORD:''}
-    trust-store-type: PKCS12
-    client-auth: need
 spring:
   application:
     name: warehouse-service
+  config:
+      import: "classpath:ssl-server.yml"
   data:
     mongodb:
       uri: mongodb://${MONGO_USER:mongo}:${MONGO_PASS:mongo}@${MONGO_HOST:localhost}:${MONGO_PORT:27016}/warehouse?authSource=admin

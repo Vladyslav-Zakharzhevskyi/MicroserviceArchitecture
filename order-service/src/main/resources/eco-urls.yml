@@ -2,4 +2,4 @@ eco:
   services:
     urls:
       warehouse: ${ECO_SERVICE_WAREHOUSE_URL:https://localhost:8070/api/v1/warehouse}
-      products: ${ECO_SERVICE_ORDERS_URL:http://localhost:8080/api/products}
+      products: ${ECO_SERVICE_ORDERS_URL:https://localhost:8080/api/products}

@@ -1,0 +1,11 @@
+server:
+  ssl:
+    enabled: true
+    key-store: file:${KEY_STORE_LOCATION:''}
+    key-store-password: ${KEY_STORE_PASSWORD:''}
+    key-store-type: PKCS12
+    key-alias: keystore-products
+    trust-store: file:${TRUST_STORE_LOCATION:''}
+    trust-store-password: ${TRUST_STORE_PASSWORD:''}
+    trust-store-type: PKCS12
+    client-auth: need

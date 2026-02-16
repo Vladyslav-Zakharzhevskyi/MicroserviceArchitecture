@@ -2,20 +2,7 @@ server:
   port: 8080
 spring:
   config:
-    import: "classpath:resilience4j.yml, classpath:ecosystem-urls.yml"
-  ssl:
-    bundle:
-      jks:
-        products-client:
-          keystore:
-            location: file:${KEY_STORE_LOCATION:''}
-            password: ${KEY_STORE_PASSWORD:''}
-            type: PKCS12
-            alias: keystore-products
-          truststore:
-            location: file:${TRUST_STORE_LOCATION:''}
-            password: ${TRUST_STORE_PASSWORD:''}
-            type: PKCS12
+    import: "classpath:resilience4j.yml, classpath:eco-urls.yml, classpath:ssl-client.yml, classpath:ssl-server.yml"
   application:
     name: product-service
   datasource:

@@ -2,22 +2,9 @@ server:
   port: 8060
 spring:
   config:
-    import: "classpath:ecosystem-urls.yml"
+    import: "classpath:eco-urls.yml, classpath:ssl-client.yml"
   application:
     name: order-service
-  ssl:
-    bundle:
-      jks:
-        orders-client:
-          keystore:
-            location: file:${KEY_STORE_LOCATION:''}
-            password: ${KEY_STORE_PASSWORD:''}
-            type: PKCS12
-            alias: keystore-orders
-          truststore:
-            location: file:${TRUST_STORE_LOCATION:''}
-            password: ${TRUST_STORE_PASSWORD:''}
-            type: PKCS12
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5429}/orders
     username: postgres
