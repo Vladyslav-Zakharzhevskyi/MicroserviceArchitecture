@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
-@FeignClient(name = "product-service", url = "${eco.services.urls.products}")
+@FeignClient(name = "product-service", url = "${eco.url.products}")
 public interface ProductServiceClient {
     @RequestMapping(method = RequestMethod.GET, path = "/{productId}")
     ProductDTO getProductById(@PathVariable(name = "productId") UUID productId, @RequestParam(name = "skipAvailability") Boolean skipAvailability);
