@@ -1,7 +1,5 @@
 package org.homecorporation.config;
 
-import feign.micrometer.MicrometerObservationCapability;
-import io.micrometer.observation.ObservationRegistry;
 import org.springframework.cloud.openfeign.CircuitBreakerNameResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

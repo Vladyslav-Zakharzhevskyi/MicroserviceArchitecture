@@ -1,5 +1,7 @@
 server:
-  port: 8080
+  http:
+    port: 80
+  port: 443
 spring:
   config:
     import: "classpath:resilience4j.yml, classpath:eco-urls.yml, classpath:ssl-client.yml, classpath:ssl-server.yml"

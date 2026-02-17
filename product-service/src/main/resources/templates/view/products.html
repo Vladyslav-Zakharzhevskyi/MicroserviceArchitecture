@@ -31,19 +31,19 @@
         <td th:text="${product.description}"></td>
         <td th:switch="${product.availableItemCount > 0}">
             <div th:case="true">
-                <form th:action="${@environment.getProperty('eco.services.urls.orders')}"
+                <form th:action="${@environment.getProperty('eco.url.orders')}"
                       method="post" target="_blank" style="display:inline">
                     <input type="hidden" name="productId" th:value="${product.id}"/>
                     <input type="hidden" name="count" value="1"/>
                     <button type="submit">Заказать</button>
                 </form>
-                <form th:action="${@environment.getProperty('eco.services.urls.orders')}"
+                <form th:action="${@environment.getProperty('eco.url.orders')}"
                       method="post" target="_blank" style="display:inline">
                     <input type="hidden" name="productId" th:value="${product.id}"/>
                     <input type="hidden" name="count" value="3"/>
                     <button type="submit">Заказать 3 Itema</button>
                 </form>
-                <form th:action="${@environment.getProperty('eco.services.urls.orders')}"
+                <form th:action="${@environment.getProperty('eco.url.orders')}"
                       method="post" target="_blank" style="display:inline">
                     <input type="hidden" name="productId" th:value="${product.id}"/>
                     <input type="hidden" name="count" value="5"/>

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "warehouse-service", url = "${eco.services.urls.warehouse}" + WarehouseClient.AVAILABILITY_SFX,
+@FeignClient(name = "warehouse-service", url = "${eco.url.warehouse}" + WarehouseClient.AVAILABILITY_SFX,
         fallbackFactory = WarehouseClientFallbackFactory.class)
 @Retry(name = "warehouse-service")
 public interface WarehouseClient {
