@@ -4,7 +4,7 @@ server:
   port: 443
 spring:
   config:
-    import: "classpath:resilience4j.yml, classpath:eco-urls.yml, classpath:ssl-client.yml, classpath:ssl-server.yml"
+    import: "classpath:ssl-client.yml, classpath:ssl-server.yml, classpath:oauth2-security.yml, classpath:resilience4j.yml, classpath:eco-urls.yml, classpath:logging.yml"
   application:
     name: product-service
   datasource:
@@ -68,15 +68,3 @@ management:
       export:
         enabled: true
         url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
-
-logging:
-  pattern:
-    level: "%5p [traceId=%X{traceId}, spanId=%X{spanId}]"
-  level:
-    root: INFO
-    org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
-    io.micrometer.tracing: INFO
-    io.opentelemetry: WARN
-    io.opentelemetry.exporter: WARN
-    org.apache.tomcat.util.net: DEBUG

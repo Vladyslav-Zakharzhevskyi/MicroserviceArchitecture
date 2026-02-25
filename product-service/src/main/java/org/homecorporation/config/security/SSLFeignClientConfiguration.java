@@ -1,7 +1,6 @@
-package org.homecorporation.config;
+package org.homecorporation.config.security;
 
 import feign.Client;
-import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +11,12 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 @Configuration
-public class SSLConfigFeignClient {
+public class SSLFeignClientConfiguration {
 
     @Bean
     public Client feignClient(SslBundles sslBundles) {
         SSLContext sslContext = sslBundles
-                .getBundle("orders-client")
+                .getBundle("products-client")
                 .createSslContext();
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();

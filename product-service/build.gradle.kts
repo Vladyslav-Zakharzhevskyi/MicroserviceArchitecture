@@ -35,6 +35,9 @@ dependencies {
 
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:${openFeignVersion}")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:${resilience4jVersion}")
+    /* spring security, integration with keycloak */
+    implementation ("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation ("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
     implementation("io.micrometer:micrometer-registry-prometheus")

@@ -5,6 +5,8 @@ import org.homecorporation.dto.ProductDTO;
 import org.homecorporation.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,15 +25,17 @@ public class ProductsController {
     private ProductsService productsService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getProducts(@RequestParam(value = "onlyAvailable", required = false, defaultValue = "false") Boolean onlyAvailable,
-                                                               Model model) {
+    public String getProducts(@AuthenticationPrincipal OAuth2User principal,
+                              @RequestParam(value = "onlyAvailable", required = false, defaultValue = "false") Boolean onlyAvailable,
+                              Model model) {
         List<ProductDTO> products = productsService.getProducts(onlyAvailable, Boolean.TRUE);
         model.addAttribute("products", products);
         return "view/products";
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{productId}")
-    private ResponseEntity<ProductDTO> getProduct(@PathVariable(name = "productId") UUID id,
+    private ResponseEntity<ProductDTO> getProduct(@AuthenticationPrincipal OAuth2User principal,
+                                                  @PathVariable(name = "productId") UUID id,
                                                   @RequestParam(name = "skipAvailability", required = false, defaultValue = "false") Boolean skipAvailability) {
 
         return ResponseEntity

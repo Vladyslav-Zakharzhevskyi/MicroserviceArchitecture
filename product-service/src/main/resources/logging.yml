@@ -1,0 +1,12 @@
+logging:
+  pattern:
+    level: "%5p [traceId=%X{traceId}, spanId=%X{spanId}]"
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    io.micrometer.tracing: INFO
+    io.opentelemetry: WARN
+    io.opentelemetry.exporter: WARN
+    org.apache.tomcat.util.net: DEBUG
