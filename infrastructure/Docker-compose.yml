@@ -19,6 +19,43 @@ services:
 #      timeout: 5s
 #      retries: 20
 
+  postgres-keycloak:
+    image: postgres:16
+    container_name: postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5400:5432"
+    volumes:
+      - ./postgres-keycloak-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./static/keycloak/realms/searching-work-realm.json:/opt/keycloak/data/import/realm.json
+    command: [ "start-dev", "--import-realm" ]
+
   products-postgres:
     image: postgres:17.0
     container_name: products-postgres
@@ -149,8 +186,8 @@ services:
     ports:
       - "1111:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PERSONAL_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PERSONAL_PASSWORD}
     volumes:
       - ./pgadmin-data:/var/lib/pgadmin
 
@@ -305,6 +342,7 @@ services:
 
 
 volumes:
+  postgres-keycloak-data:
   postgres-clients-data:
   postgres-products-data:
   postgres-orders-data:
