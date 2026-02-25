@@ -11,12 +11,12 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 @Configuration
-public class SSLConfigFeignClient {
+public class SSLFeignClientConfig {
 
     @Bean
     public Client feignClient(SslBundles sslBundles) {
         SSLContext sslContext = sslBundles
-                .getBundle("products-client")
+                .getBundle("orders-client")
                 .createSslContext();
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();

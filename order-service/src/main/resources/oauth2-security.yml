@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          identity:
+            provider: keycloak
+            client-id: ${KEYCLOAK_CLIENT_ID:''}
+            client-secret: ${KEYCLOAK_SECRET_ID:''}
+            authorization-grant-type: client_credentials
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI:''}

@@ -2,7 +2,7 @@ server:
   port: 8060
 spring:
   config:
-    import: "classpath:eco-urls.yml, classpath:ssl-client.yml"
+    import: "classpath:eco-urls.yml, classpath:ssl-client.yml, classpath:oauth2-security.yml, classpath:logging.yml"
   application:
     name: order-service
   datasource:
