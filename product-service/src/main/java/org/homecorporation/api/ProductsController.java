@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("api/products")
@@ -30,6 +31,14 @@ public class ProductsController {
                               Model model) {
         List<ProductDTO> products = productsService.getProducts(onlyAvailable, Boolean.TRUE);
         model.addAttribute("products", products);
+
+        int totalAvailableItemsCount = products.stream()
+                .mapToInt(ProductDTO::availableItemCount)
+                .sum();
+
+        model.addAttribute("totalAvailableItemsCount", totalAvailableItemsCount);
+
+
         return "view/products";
     }
 
