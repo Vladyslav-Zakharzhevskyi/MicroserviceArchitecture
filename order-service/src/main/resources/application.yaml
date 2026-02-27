@@ -7,8 +7,8 @@ spring:
     name: order-service
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5429}/orders
-    username: postgres
-    password: postgres
+    username: ${PERSONAL_EMAIL}
+    password: ${PERSONAL_PASSWORD}
     driver-class-name: org.postgresql.Driver
     proxy:
       enable-logging: true

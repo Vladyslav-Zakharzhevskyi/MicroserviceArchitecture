@@ -4,7 +4,7 @@ logging:
   level:
 #    root: INFO
     org.springframework.web: INFO
-#    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: INFO
     io.micrometer.tracing: INFO
     io.opentelemetry: WARN
     io.opentelemetry.exporter: WARN
