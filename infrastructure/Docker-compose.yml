@@ -1,31 +1,14 @@
 version: '3.9'
 
 services:
-#  clients-postgres:
-#    image: postgres:17.0
-#    container_name: clients-postgres
-#    environment:
-#      POSTGRES_DB: clients
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#    ports:
-#      - "5431:5432"
-#    volumes:
-#      - ../client-service/src/main/resources/database:/docker-entrypoint-initdb.d:ro
-#      - ./postgres-clients-data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U postgres -p 5432" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 20
 
   postgres-keycloak:
     image: postgres:16
     container_name: postgres-keycloak
     environment:
       POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
+      POSTGRES_USER: ${PERSONAL_EMAIL}
+      POSTGRES_PASSWORD: ${PERSONAL_PASSWORD}
     ports:
       - "5400:5432"
     volumes:
@@ -42,10 +25,10 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB_USERNAME: ${PERSONAL_EMAIL}
+      KC_DB_PASSWORD: ${PERSONAL_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${PERSONAL_EMAIL}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${PERSONAL_PASSWORD}
       KC_HEALTH_ENABLED: "true"
     depends_on:
       postgres-keycloak:
@@ -53,7 +36,7 @@ services:
     ports:
       - "5000:8080"
     volumes:
-      - ./static/keycloak/realms/searching-work-realm.json:/opt/keycloak/data/import/realm.json
+      - ./static/keycloak/realms/searching-work-realm.json:/opt/keycloak/data/import/realm-local-stage-prod.json
     command: [ "start-dev", "--import-realm" ]
 
   products-postgres:
@@ -61,8 +44,8 @@ services:
     container_name: products-postgres
     environment:
       POSTGRES_DB: products
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${PERSONAL_EMAIL}
+      POSTGRES_PASSWORD: ${PERSONAL_PASSWORD}
     ports:
       - "5430:5432"
     volumes:
@@ -103,8 +86,8 @@ services:
     container_name: warehouse-mongo
     environment:
       MONGO_INITDB_DATABASE: warehouse
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_ROOT_USERNAME: ${PERSONAL_EMAIL}
+      MONGO_INITDB_ROOT_PASSWORD: ${PERSONAL_PASSWORD}
     ports:
       - "27016:27017"
     volumes:
@@ -144,8 +127,8 @@ services:
     container_name: orders-postgres
     environment:
       POSTGRES_DB: orders
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${PERSONAL_EMAIL}
+      POSTGRES_PASSWORD: ${PERSONAL_PASSWORD}
     ports:
       - "5429:5432"
     volumes:
@@ -181,7 +164,7 @@ services:
 #      retries: 30
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.12
     container_name: pgadmin
     ports:
       - "1111:80"
@@ -198,12 +181,10 @@ services:
       - "1112:8081"
     environment:
       ME_CONFIG_MONGODB_SERVER: warehouse-mongo
-      ME_CONFIG_MONGODB_ADMINUSERNAME: mongo
-      ME_CONFIG_MONGODB_ADMINPASSWORD: mongo
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
-    depends_on:
-      - warehouse-mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${PERSONAL_EMAIL_SPECIAL_SYMBOLS_ENCODED}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${PERSONAL_PASSWORD}
+      ME_CONFIG_BASICAUTH_USERNAME: ${PERSONAL_EMAIL_SPECIAL_SYMBOLS_ENCODED}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${PERSONAL_PASSWORD}
 
 
   prometheus:
@@ -231,16 +212,16 @@ services:
     volumes:
       - ./grafana-data:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=${PERSONAL_EMAIL}
+      - GF_SECURITY_ADMIN_PASSWORD=${PERSONAL_PASSWORD}
 
   products-postgres-exporter:
     image: prometheuscommunity/postgres-exporter:latest
     container_name: products-postgres-exporter
     environment:
       DATA_SOURCE_URI: "products-postgres:5432/products?sslmode=disable"
-      DATA_SOURCE_USER: "postgres"
-      DATA_SOURCE_PASS_FILE: "/etc/config/pass.txt"
+      DATA_SOURCE_USER: ${PERSONAL_EMAIL}
+      DATA_SOURCE_PASSWORD: ${PERSONAL_PASSWORD}
       PG_EXPORTER_DISABLE_DEFAULT_METRICS: true
       PG_EXPORTER_DISABLE_SETTINGS_METRICS: true
     volumes:
@@ -266,26 +247,13 @@ services:
       - "9399:9399"
     command: ["-config.file=/etc/config/sql_exporter.yml"]
 
-#  clients-postgres-exporter:
-#    image: prometheuscommunity/postgres-exporter:latest
-#    container_name: clients-postgres-exporter
-#    environment:
-#      DATA_SOURCE_URI: "clients-postgres:5432/clients?sslmode=disable"
-#      DATA_SOURCE_USER: postgres
-#      DATA_SOURCE_PASS: postgres
-#    depends_on:
-#      clients-postgres:
-#        condition: service_healthy
-#    ports:
-#      - "9186:9187"
-
   warehouse-mongo-exporter:
     image: percona/mongodb_exporter:2.37
     container_name: warehouse-mongo-exporter
     environment:
       MONGODB_URI: mongodb://warehouse-mongo:27017/warehouse?authSource=admin
-      AUTH_USER: mongo
-      AUTH_PASS: mongo
+      AUTH_USER: ${PERSONAL_EMAIL}
+      AUTH_PASS: ${PERSONAL_PASSWORD}
     depends_on:
       warehouse-mongo:
         condition: service_healthy
