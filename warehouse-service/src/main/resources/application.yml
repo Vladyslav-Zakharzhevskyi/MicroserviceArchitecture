@@ -7,7 +7,12 @@ spring:
       import: "classpath:ssl-server.yml"
   data:
     mongodb:
-      uri: mongodb://${MONGO_USER:mongo}:${MONGO_PASS:mongo}@${MONGO_HOST:localhost}:${MONGO_PORT:27016}/warehouse?authSource=admin
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27016}
+      database: warehouse
+      username: ${PERSONAL_EMAIL:mongo}
+      password: ${PERSONAL_PASSWORD:mongo}
+      authentication-database: admin
 management:
   tracing:
     enabled: true
