@@ -30,7 +30,7 @@ spring:
         use_sql_comments: true
 management:
   tracing:
-    enabled: true
+    enabled: ${OBSERVABILITY_STACK_ENABLED:true}
     sampling:
       probability: 1.0
   metrics:
@@ -39,7 +39,7 @@ management:
         http.server.requests: true
     export:
       prometheus:
-        enabled: true
+        enabled: ${OBSERVABILITY_STACK_ENABLED:true}
   endpoints:
     web:
       exposure:
@@ -50,7 +50,7 @@ management:
       transport: grpc
     metrics:
       export:
-        enabled: true
+        enabled: ${OBSERVABILITY_STACK_ENABLED:true}
         url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
 logging:
   pattern:
