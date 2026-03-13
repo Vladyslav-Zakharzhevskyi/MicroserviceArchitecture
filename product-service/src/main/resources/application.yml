@@ -51,13 +51,13 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
+        enabled: ${OBSERVABILITY_STACK_ENABLED:true}
   endpoints:
     web:
       exposure:
         include: "health,prometheus"
   tracing:
-    enabled: true
+    enabled: ${OBSERVABILITY_STACK_ENABLED:true}
     sampling:
       probability: 1.0
   otlp:
@@ -66,5 +66,5 @@ management:
       transport: grpc
     metrics:
       export:
-        enabled: true
+        enabled: ${OBSERVABILITY_STACK_ENABLED:true}
         url: ${ALLOY_METRICS_SEND_URL:http://localhost:4320/v1/metrics}
