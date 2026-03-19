@@ -56,7 +56,7 @@ spec:
 
             # SSL security
             - name: SSL_KEY_STORE_LOCATION
-              value: "/mnt/secrets/Orders-Service-Keystore"
+              value: "/mnt/secrets/Orders-keystore.pfx"
             # todo replace with _helpers.tpl
             - name: SSL_KEY_STORE_PASSWORD
               valueFrom:
@@ -64,7 +64,7 @@ spec:
                   name: {{ .Values.global.secretsName }}
                   key: SSL_KEY_STORE_PASSWORD
             - name: SSL_TRUST_STORE_LOCATION
-              value: "file:/mnt/secrets/Truststore"
+              value: "/mnt/secrets/Truststore.pfx"
             - name: SSL_TRUST_STORE_PASSWORD
               valueFrom:
                 secretKeyRef:
