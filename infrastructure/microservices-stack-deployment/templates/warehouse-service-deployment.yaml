@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: warehouse-service
+spec:
+  replicas: {{ .Values.warehouseService.replicaCount }}
+  selector:
+    matchLabels:
+      app: warehouse-service
+  template:
+    metadata:
+      labels:
+        app: warehouse-service
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.warehouseService.image.repository }}:{{ .Values.global.environment.image.tag }}"
+            {{ if .Values.warehouseService.command }}
+          command: {{ .Values.warehouseService.command | toJson }}
+            {{ end }}
+            {{ if .Values.warehouseService.args }}
+          args: {{ .Values.warehouseService.args | toJson }}
+            {{ end }}
+          ports:
+            - containerPort: {{ .Values.warehouseService.port }}
+          env:
+            # DB Connection
+            - name: MONGO_HOST
+              value: "{{ .Release.Name }}-{{ .Values.warehouseService.environments.db.host }}"
+            - name: MONGO_PORT
+              value: {{ .Values.warehouseService.environments.db.port | quote }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.global.environment.personalEmail }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: PERSONAL_PASSWORD
+
+            # Feign todo replace with _helpers.tpl
+            - name: ECO_SERVICE_PRODUCTS_URL
+              value: "https://{{ .Release.Name }}-products-service:{{ .Values.productsService.port }}/api/products"
+            - name: ECO_SERVICE_ORDERS_URL
+              value: "https://{{ .Release.Name }}-orders-service:{{ .Values.ordersService.port }}/api/v1/orders"
+            - name: ECO_SERVICE_WAREHOUSE_URL
+              value: "https://{{ .Release.Name }}-warehouse-service:{{ .Values.warehouseService.port }}/api/v1/warehouse"
+            # Feign todo replace with _helpers.tpl
+
+            # SSL security
+            - name: SSL_KEY_STORE_LOCATION
+              value: "/mnt/secrets/Warehouse-Service-Keystore"
+            # todo replace with _helpers.tpl
+            - name: SSL_KEY_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: SSL_KEY_STORE_PASSWORD
+            - name: SSL_TRUST_STORE_LOCATION
+              value: "file:/mnt/secrets/Truststore"
+            - name: SSL_TRUST_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: SSL_TRUST_STORE_PASSWORD
+
+
+            # Observability and Alloy endpoints
+            - name: OBSERVABILITY_STACK_ENABLED
+              value: {{ .Values.global.environment.isObservabilityEnabled | quote }}
+            - name: ALLOY_METRICS_SEND_URL
+              value: {{ .Values.global.environment.alloyEndpoint.metrics }}
+            - name: ALLOY_TRACES_SEND_URL
+              value: {{ .Values.global.environment.alloyEndpoint.traces }}
+
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.global.environment.springProfilesActive }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets"
+              readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.global.secretProviderClassName }}

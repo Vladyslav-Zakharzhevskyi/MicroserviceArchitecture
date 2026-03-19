@@ -1,0 +1,9 @@
+# templates/configmap-alloy.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-alloy-config # Должно совпадать с alloy.alloy.configMap.name
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  config.alloy:  {{ .Files.Get "configs/config.alloy" | indent 4 }}

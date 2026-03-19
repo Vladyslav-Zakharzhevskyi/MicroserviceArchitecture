@@ -1,0 +1,168 @@
+global:
+  security:
+    allowInsecureImages: true
+  secretProviderClassName: "akv-global-secrets"
+  secretsName: "global-k8s-secrets"
+
+  environment:
+    personalEmail: "vladyslav.zr@gmail.com"
+    alloyEndpoint:
+      metrics: "http://alloy:4318/v1/metrics"
+      traces: "http://alloy:4317/v1/traces"
+    keycloak:
+      keycloakIssuerUri: "http://{{.Release.Name}}-keycloak:80/realms/searching-work"
+      keycloakJWKUri: "http://auth.external-keycloak.com/realms/searching-work/protocol/openid-connect/certs"
+    springProfilesActive: "kubernetes"
+    isObservabilityEnabled: false
+    image:
+      tag: "1.1.0"
+
+
+secretsSpec:
+  include: &secrets_spec
+    primary:
+      extraVolumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "akv-global-secrets"
+      extraVolumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets"
+          readOnly: true
+
+
+productsService:
+  replicaCount: 1
+  image:
+    repository: ecoshelmchart.azurecr.io/products-service
+  port: 8080
+  environments:
+    db:
+      host: "products-postgres"
+      port: 5432
+    keycloak:
+      clientId: users-login-client
+  <<: *secrets_spec
+
+
+warehouseService:
+  replicaCount: 1
+  image:
+    repository: ecoshelmchart.azurecr.io/warehouse-service
+  port: 8070
+  environments:
+    db:
+      host: "warehouse-mongo"
+      port: 27017
+  <<: *secrets_spec
+
+ordersService:
+  replicaCount: 1
+  image:
+    repository: ecoshelmchart.azurecr.io/orders-service
+  port: 8060
+  environments:
+    db:
+      host: "orders-postgres"
+      port: 5432
+    keycloak:
+      clientId: order-service-client
+  <<: *secrets_spec
+
+
+# ---------------------------------------------------------
+# Настройки для ЗАВИСИМОСТЕЙ (базы данных из Chart.yaml)
+# ---------------------------------------------------------
+# Mongo для Warehouse
+warehouse-mongo:
+  auth:
+    rootUser: "vladyslav.zr@gmail.com"
+    existingSecret: "global-k8s-secrets"
+    rootPasswordKey: "PERSONAL_PASSWORD"
+    rootPassword: "miss"
+    forcePassword: false
+  architecture: standalone
+  <<: *secrets_spec
+
+# Postgres для Products
+products-postgres:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "17.6.0"
+  auth:
+    database: "products"
+    username: "vladyslav.zr@gmail.com"
+    password: "Development_2531"
+
+
+# Postgres для Orders
+orders-postgres:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "17.6.0-debian-12-r3"
+  auth:
+    database: "orders"
+    username: "vladyslav.zr@gmail.com"
+    password: "Development_2531"
+
+
+
+keycloak:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/keycloak
+    tag: "26.2.0"
+  postgresql:
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/postgresql
+      tag: "17.6.0-debian-12-r4"
+
+  production: true
+#  tls:
+#    enabled: true
+#  proxyHeaders: xforwarded
+  proxy: "edge"
+
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    hostname: "auth.external-keycloak.com"
+    annotations: {}
+
+  extraStartupArgs: "--import-realm"
+  extraVolumes:
+    - name: realm-data-volume
+      configMap:
+        name: "keycloak-realm-config"
+  extraVolumeMounts:
+    - name: realm-data-volume
+      mountPath: "/opt/bitnami/keycloak/data/import"
+      readOnly: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

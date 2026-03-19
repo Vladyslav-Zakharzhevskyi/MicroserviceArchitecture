@@ -1,0 +1,96 @@
+{
+  "realm": "searching-work",
+  "enabled": true,
+  "displayName": "In searching job",
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+
+  "roles": {
+    "realm": [
+      { "name": "ROLE_USER", "description": "Regular user" },
+      { "name": "ROLE_ADMIN", "description": "Administrator" }
+    ]
+  },
+
+  "users": [
+    {
+      "username": "vlad_kovboi",
+      "email": "vladyslav.zr@gmail.com",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "TempPass123!",
+          "temporary": true
+        }
+      ],
+      "requiredActions": [
+        "UPDATE_PASSWORD"
+      ],
+      "realmRoles": ["ROLE_USER"]
+    }
+  ],
+
+  "clients": [
+    {
+      "clientId": "users-login-client",
+      "name": "Users Login (Email Password)",
+      "enabled": true,
+      "protocol": "openid-connect",
+
+      "publicClient": true,
+
+      "serviceAccountsEnabled": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+
+      "redirectUris": [
+        "http://localhost/*",
+        "https://localhost/*"
+      ],
+
+      "webOrigins": []
+    },
+    {
+      "clientId": "order-service-client",
+      "name": "Order Service (mTLS)",
+      "enabled": true,
+      "protocol": "openid-connect",
+
+      "publicClient": false,
+      "bearerOnly": false,
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+
+      "clientAuthenticatorType": "client-secret",
+
+      "attributes": {
+        "tls.client.certificate.bound.access.tokens": "false"
+      }
+    }
+  ]
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
