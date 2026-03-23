@@ -10,7 +10,7 @@ global:
       metrics: "http://alloy:4318/v1/metrics"
       traces: "http://alloy:4317/v1/traces"
     keycloak:
-      keycloakIssuerUri: "http://{{.Release.Name}}-keycloak:80/realms/searching-work"
+      keycloakIssuerUri: "http://auth.external-keycloak.com/realms/searching-work"
       keycloakJWKUri: "http://auth.external-keycloak.com/realms/searching-work/protocol/openid-connect/certs"
     springProfilesActive: "kubernetes"
     isObservabilityEnabled: false
@@ -38,7 +38,7 @@ productsService:
   replicaCount: 1
   image:
     repository: ecoshelmchart.azurecr.io/products-service
-  port: 8080
+  port: 443
   environments:
     db:
       host: "products-postgres"
@@ -133,8 +133,12 @@ keycloak:
     enabled: true
     ingressClassName: "nginx"
     hostname: "auth.external-keycloak.com"
-    annotations: {}
-
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+      nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+      nginx.ingress.kubernetes.io/set-real-ip-from: "0.0.0.0/0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
   extraStartupArgs: "--import-realm"
   extraVolumes:
     - name: realm-data-volume
@@ -144,7 +148,15 @@ keycloak:
     - name: realm-data-volume
       mountPath: "/opt/bitnami/keycloak/data/import"
       readOnly: true
-
+  extraEnvVars:
+    - name: KC_HOSTNAME
+      value: "auth.external-keycloak.com"
+    - name: KC_HOSTNAME_STRICT
+      value: "false"
+    - name: KC_HOSTNAME_STRICT_HTTPS
+      value: "false"
+    - name: KC_HTTP_ENABLED
+      value: "true"
 
 
 

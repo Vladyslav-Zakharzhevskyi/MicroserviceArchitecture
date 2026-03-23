@@ -12,6 +12,10 @@ spec:
       labels:
         app: products-service
     spec:
+      hostAliases:
+        - ip: "10.0.155.4"
+          hostnames:
+            - "auth.external-keycloak.com"
       containers:
         - name: products-service
           image: "{{ .Values.productsService.image.repository }}:{{ .Values.global.environment.image.tag }}"
@@ -41,7 +45,7 @@ spec:
             - name: KEYCLOAK_CLIENT_ID
               value: {{ .Values.productsService.environments.keycloak.clientId }}
             - name: KEYCLOAK_ISSUER_URI
-              value: http://{{ .Release.Name }}-keycloak:80/realms/searching-work
+              value: {{ .Values.global.environment.keycloak.keycloakIssuerUri }}
             - name: KEYCLOAK_JWK_URI
               value: {{ .Values.global.environment.keycloak.keycloakJWKUri }}
 

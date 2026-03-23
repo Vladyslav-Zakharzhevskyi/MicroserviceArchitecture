@@ -5,5 +5,4 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
 data:
-  realm.json: | 
-                {{ .Files.Get "../configs/searching-work-realm.json" | indent 4 }}
+  realm.json: {{ .Files.Get "configs/searching-work-realm.json" | quote }}
